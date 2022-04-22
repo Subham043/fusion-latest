@@ -18,6 +18,8 @@ use FI\Support\FileNames;
 use FI\Support\PDF\PDFFactory;
 use FI\Support\Statuses\QuoteStatuses;
 use FI\Traits\ReturnUrl;
+use Addons\Scheduler\Models\Schedule;
+use FI\Modules\CustomFields\Models\CustomField;
 
 class QuoteController extends Controller
 {
@@ -55,18 +57,44 @@ class QuoteController extends Controller
     {
         Quote::destroy($id);
 
+	$event =  Schedule::select('*')
+            ->where('quotes_id', $id)
+            ->first();
+	if(!empty($event)){
+		$event->delete();
+	}
+
         return redirect()->route('quotes.index')
             ->with('alert', trans('fi.record_successfully_deleted'));
     }
 
     public function bulkDelete()
     {
+	foreach(request('ids') as $id){
+            $event =  Schedule::select('*')
+            ->where('quotes_id', $id)
+            ->first();
+		if(!empty($event)){
+		    $event->delete();
+		}
+        }
+
         Quote::destroy(request('ids'));
     }
 
     public function bulkStatus()
     {
         Quote::whereIn('id', request('ids'))->update(['quote_status_id' => request('status')]);
+	
+	foreach(request('ids') as $id){
+            $event =  Schedule::select('*')
+            ->where('quotes_id', $id)
+            ->first();
+		if(!empty($event)){
+    			$event->category_id = request('status');
+    			$event->save();
+		}
+        }
     }
 
     public function pdf($id)
@@ -84,10 +112,21 @@ class QuoteController extends Controller
         
         $file = view('templates.checklist.quoteChecklist')
             ->with('quote', $quote)
+		->with('customFields', CustomField::forTable('quotes')->get())
             ->with('logo', $quote->companyProfile->logo())->render();
 
         $pdf = PDFFactory::create();
 
         $pdf->download($file,'item-checklist.pdf');
+    }
+
+	public function itemChecklistPrint($id)
+    {
+        $quote = Quote::find($id);
+        
+        return view('quotes.itemChecklistPrint')
+            ->with('quote', $quote)
+	->with('customFields', CustomField::forTable('quotes')->get())
+		->with('logo', $quote->companyProfile->logo())->render();
     }
 }

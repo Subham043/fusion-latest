@@ -1,4 +1,4 @@
-<table class="table table-hover" style="height: 100%;">
+<table class="table table-hover">
 
     <thead>
     <tr>
@@ -60,9 +60,9 @@
                                     class="fa fa-envelope"></i> {{ trans('fi.email') }}</a></li>@endif
                         <li><a href="{{ route('clientCenter.public.quote.show', [$quote->url_key]) }}" target="_blank"
                                id="btn-public-quote"><i class="fa fa-globe"></i> {{ trans('fi.public') }}</a></li>
-                        <li><a href="{{ route('quotes.delete', [$quote->id]) }}"
+                       <!-- <li><a href="{{ route('quotes.delete', [$quote->id]) }}"
                                onclick="return confirm('{{ trans('fi.delete_record_warning') }}');"><i
-                                    class="fa fa-trash-o"></i> {{ trans('fi.delete') }}</a></li>
+                                    class="fa fa-trash-o"></i> {{ trans('fi.delete') }}</a></li>-->
                     </ul>
                 </div>
             </td>

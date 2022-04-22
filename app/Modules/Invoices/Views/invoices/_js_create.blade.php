@@ -30,6 +30,7 @@
         });
 
         $('#create_invoice_date').datepicker({format: '{{ config('fi.datepickerFormat') }}', autoclose: true, startDate: new Date()});
+	$("#create_event_date").datepicker({format: '{{ config('fi.datepickerFormat') }}', autoclose: true, startDate: new Date()});
 
         $('#invoice-create-confirm').click(function () {
 
@@ -38,6 +39,7 @@
                 company_profile_id: $('#company_profile_id').val(),
                 client_name: $('#create_client_name').val(),
                 invoice_date: $('#create_invoice_date').val(),
+		event_date: $('#create_event_date').val(),
                 // group_id: $('#create_group_id').val()
                 group_id: 1
             }).done(function (response) {

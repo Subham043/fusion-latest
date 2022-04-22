@@ -33,7 +33,7 @@ class InvoiceCreateController extends Controller
 
     public function store(InvoiceStoreRequest $request)
     {
-        $input = $request->except(['client_name','invoice_date', 'type']);
+        $input = $request->except(['client_name','invoice_date', 'event_date', 'type']);
 
         $input['client_id']    = Client::firstOrCreateByUniqueName($request->input('client_name'))->id;
         
@@ -42,8 +42,8 @@ class InvoiceCreateController extends Controller
         $client->save();
         
         $input['invoice_date'] = DateFormatter::unformat($request->input('invoice_date'));
-        $input['event_date'] = DateFormatter::unformat($request->input('invoice_date'));
-        
+        $input['event_date'] = DateFormatter::unformat($request->input('event_date'));
+        $input['due_at'] = DateFormatter::unformat(date("m/d/Y", strtotime($input['event_date'] . "-3 week")));
         $input['group_id'] = 1;
 
         $invoice = Invoice::create($input);

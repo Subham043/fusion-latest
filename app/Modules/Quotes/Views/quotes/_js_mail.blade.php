@@ -5,9 +5,9 @@
         attachPdf = 0;
 
         $('#modal-mail-quote').modal({backdrop: 'static'}).on('shown.bs.modal', function () {
-            $('#to').chosen();
-            $('#cc').chosen();
-            $('#bcc').chosen();
+            $('#to').chosen({create_option:true});
+            $('#cc').chosen({create_option:true});
+            $('#bcc').chosen({create_option:true});
         });
 
         $('#btn-submit-mail-quote').click(function () {

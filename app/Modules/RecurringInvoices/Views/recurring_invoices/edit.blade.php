@@ -4,7 +4,7 @@
 
     @include('layouts._datepicker')
     @include('layouts._typeahead')
-    @include('item_lookups._js_item_lookups')
+    @include('inventory._js_inventory')
 
 @stop
 

@@ -27,6 +27,7 @@
         <section class="sidebar">
 
             @if (config('fi.displayProfileImage'))
+		<div>
                 <div class="user-panel">
                     <div class="pull-left image">
                         <img src="{{ $profileImageUrl }}" alt="User Image"/>
@@ -35,19 +36,22 @@
                         <p>{{ $userName }}</p>
                     </div>
                 </div>
-            @endif
-
-            @if (isset($displaySearch) and $displaySearch == true)
+		@if (isset($displaySearch) and $displaySearch == true)
+            
                 <form action="{{ request()->fullUrl() }}" method="get" class="sidebar-form">
                     <input type="hidden" name="status" value="{{ request('status') }}"/>
                     <div class="input-group">
                         <input type="text" name="search" class="form-control" placeholder="{{ trans('fi.search') }}..."/>
                         <span class="input-group-btn">
-                <button type="submit" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
-              </span>
+                            <button type="submit" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
+                        </span>
                     </div>
                 </form>
+                
             @endif
+		</div>
+            @endif
+
 
             <ul class="sidebar-menu">
                 <li>

@@ -127,6 +127,17 @@ class Contacts
 
         foreach ($this->client->contacts->pluck('name', 'email') as $email => $name)
         {
+            if(!empty($email)){
+            $contacts[$email] = $this->getFormattedContact($name, $email);
+            }
+        }
+        
+        if(!empty($this->client->email)){
+        $contacts[$this->client->email] = $this->getFormattedContact($this->client->name, $this->client->email);
+        }
+        
+        foreach (User::where('client_id', 0)->pluck('name', 'email') as $email => $name)
+        {
             $contacts[$email] = $this->getFormattedContact($name, $email);
         }
 

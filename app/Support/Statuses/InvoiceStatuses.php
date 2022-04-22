@@ -19,6 +19,7 @@ class InvoiceStatuses extends AbstractStatuses
         '2' => 'sent',
         '3' => 'paid_partial',
         '4' => 'paid_full',
-        '5' => 'canceled'
+        '5' => 'overdue',
+        '6' => 'canceled'
     ];
 }

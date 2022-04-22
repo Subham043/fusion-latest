@@ -76,5 +76,19 @@
         if ($('#name').val() !== $('#unique_name').val()) {
             showUniqueName();
         }
+
+	if($('#col-client-email select').val()==2){
+            $('#col-client-special').css('display','block')
+        }else{
+            $('#col-client-special').css('display','none')
+        }
+        
+        $('#col-client-email select').change(function () {
+            if($(this).val()==2){
+                $('#col-client-special').css('display','block')
+            }else{
+                $('#col-client-special').css('display','none')
+            }
+        })
     });
 </script>

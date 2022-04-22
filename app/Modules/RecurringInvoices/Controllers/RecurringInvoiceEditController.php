@@ -26,6 +26,7 @@ use FI\Support\DateFormatter;
 use FI\Support\Frequency;
 use FI\Support\NumberFormatter;
 use FI\Traits\ReturnUrl;
+use FI\Modules\Inventory\Models\Inventory;
 
 class RecurringInvoiceEditController extends Controller
 {
@@ -44,6 +45,7 @@ class RecurringInvoiceEditController extends Controller
             ->with('templates', InvoiceTemplates::lists())
             ->with('itemCount', count($recurringInvoice->recurringInvoiceItems))
             ->with('frequencies', Frequency::lists())
+	   ->with('inventory', Inventory::getList())
             ->with('groups', Group::getList());
     }
 
@@ -106,6 +108,7 @@ class RecurringInvoiceEditController extends Controller
             ->with('templates', InvoiceTemplates::lists())
             ->with('itemCount', count($recurringInvoice->recurringInvoiceItems))
             ->with('frequencies', Frequency::lists())
+	    ->with('inventory', Inventory::getList())
             ->with('groups', Group::getList());
     }
 

@@ -22,6 +22,7 @@ Route::group(['middleware' => ['web', 'auth.admin'], 'namespace' => 'FI\Modules\
         Route::get('{id}/pdf', ['uses' => 'InvoiceController@pdf', 'as' => 'invoices.pdf']);
         Route::get('{id}/item-checklist', ['uses' => 'InvoiceController@itemChecklist', 'as' => 'invoices.itemChecklist']);
         Route::get('{id}/print', ['uses' => 'InvoiceController@print', 'as' => 'invoices.print']);
+	Route::get('{id}/item-checklist-print', ['uses' => 'InvoiceController@itemChecklistPrint', 'as' => 'invoices.itemChecklistPrint']);
 
         Route::get('{id}/edit/refresh', ['uses' => 'InvoiceEditController@refreshEdit', 'as' => 'invoiceEdit.refreshEdit']);
         Route::post('edit/refresh_to', ['uses' => 'InvoiceEditController@refreshTo', 'as' => 'invoiceEdit.refreshTo']);

@@ -18,7 +18,7 @@ class CategoryController extends Controller {
 	public function index() {
 // 		$categories = Category::all();
 $categories = Category::select('*')
-             ->where('id', '>', 9)
+             ->where('id', '>', 10)
             ->orderBy('id')
             ->get();
 

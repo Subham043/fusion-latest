@@ -104,7 +104,9 @@ class InventoryController extends Controller
     
     public function getReservedQuantity($eventDate,$itemName,$invoiceId,$quoteId)
     {
-
+	if($itemName=="null"){
+            return 0;
+        }
         $query = DB::table('invoices')
             ->select('invoice_items.quantity','invoice_items.name', DB::raw("sum(invoice_items.quantity) as sum"))
             ->join('invoice_items', 'invoice_items.invoice_id', '=', 'invoices.id')
@@ -130,7 +132,9 @@ class InventoryController extends Controller
     
     public function getAllocatedQuantity($eventDate,$itemName,$invoiceId)
     {
-        
+        if($itemName=="null"){
+            return 0;
+        }
         $query = DB::table('invoices')
             ->select('invoice_items.quantity','invoice_items.name', DB::raw("sum(invoice_items.quantity) as sum"))
             ->join('invoice_items', 'invoice_items.invoice_id', '=', 'invoices.id')
@@ -147,6 +151,9 @@ class InventoryController extends Controller
     
     public function getAvailableQuantity($eventDate,$itemName,$invoiceId)
     {
+	if($itemName=="null"){
+            return 0;
+        }
         $inventory = Inventory::where('name',$itemName)->first();
 
         $query = DB::table('invoices')

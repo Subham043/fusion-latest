@@ -41,9 +41,9 @@
                 <li><a href="{{ route('clientCenter.public.invoice.show', [$invoice->url_key]) }}" target="_blank"><i
                             class="fa fa-globe"></i> {{ trans('fi.public') }}</a></li>
                 <li class="divider"></li>
-                <li><a href="{{ route('invoices.delete', [$invoice->id]) }}"
+               <!-- <li><a href="{{ route('invoices.delete', [$invoice->id]) }}"
                        onclick="return confirm('{{ trans('fi.delete_record_warning') }}');"><i
-                            class="fa fa-trash-o"></i> {{ trans('fi.delete') }}</a></li>
+                            class="fa fa-trash-o"></i> {{ trans('fi.delete') }}</a></li> -->
             </ul>
         </div>
 
@@ -116,7 +116,7 @@
                             <h3 class="box-title">{{ trans('fi.items') }}</h3>
 
                             <div class="box-tools pull-right">
-                                <a href="{{ route('invoices.itemChecklist', [$invoice->id]) }}" target="_blank" id="btn-pdf-invoice"
+                                <a href="{{ route('invoices.itemChecklistPrint', [$invoice->id]) }}" target="_blank" id="btn-pdf-invoice"
            class="btn btn-default"><i class="fa fa-file-pdf-o"></i> Item Checklist</a>
                                 <button class="btn btn-primary btn-sm" id="btn-add-item"><i
                                         class="fa fa-plus"></i> {{ trans('fi.add_item') }}</button>
@@ -132,7 +132,7 @@
                                     <th style="width: 10%;">{{ trans('fi.qty') }}</th>
                                     <th style="width: 10%;">{{ trans('fi.price') }}</th>
                                     <th style="width: 10%;">{{ trans('fi.tax_1') }}</th>
-                                    <th style="width: 10%;">{{ trans('fi.tax_2') }}</th>
+                                   <!-- <th style="width: 10%;">{{ trans('fi.tax_2') }}</th>-->
                                     <th style="width: 10%; text-align: right; padding-right: 25px;">{{ trans('fi.total') }}</th>
                                     <th style="width: 5%;"></th>
                                 </tr>
@@ -152,7 +152,7 @@
                                         {!! Form::hidden('availableQuan', '') !!}
                                         {!! Form::hidden('inventory_id', '', ['class'=> 'inventory_id']) !!}
                                         <!--{!! Form::text('name', null, ['class' => 'form-control']) !!}-->
-                                        {!! Form::select('name', $inventory, null, ['class' => 'form-control']) !!}
+                                        {!! Form::select('name', $inventory, "null", ['class' => 'form-control']) !!}
                                         <br>
                                         <input type="hidden" name="save_item_as_lookup" tabindex="999">
                                     </td>
@@ -187,7 +187,7 @@
                                     </td>
                                     <td>{!! Form::text('price', null, ['class' => 'form-control']) !!}</td>
                                     <td>{!! Form::select('tax_rate_id', $taxRates, config('fi.itemTaxRate'), ['class' => 'form-control']) !!}</td>
-                                    <td>{!! Form::select('tax_rate_2_id', $taxRates, config('fi.itemTax2Rate'), ['class' => 'form-control']) !!}</td>
+                                   <!-- <td>{!! Form::select('tax_rate_2_id', $taxRates, config('fi.itemTax2Rate'), ['class' => 'form-control']) !!}</td>-->
                                     <td></td>
                                     <td></td>
                                 </tr>
@@ -217,7 +217,11 @@
                                                   <thead>
                                                       <tr style="width:100%">
                                                           <td style="text-align:left">Total Quantity :</td>
-                                                          <td class="total-quan">{{$item->inventory->total}}</td>
+                                                         @if ($item->inventory()->count() > 0)
+                                                                <td class="total-quan">{{$item->inventory->total}}</td>
+                                                            @else
+                                                                <td class="total-quan">0</td>
+                                                            @endif
                                                       </tr>
                                                       <tr style="width:100%">
                                                           <td style="text-align:left">Reserved Quantity :</td>
@@ -238,7 +242,7 @@
                                         </td>
                                         <td>{!! Form::text('price', $item->formatted_numeric_price, ['class' => 'form-control']) !!}</td>
                                         <td>{!! Form::select('tax_rate_id', $taxRates, $item->tax_rate_id, ['class' => 'form-control']) !!}</td>
-                                        <td>{!! Form::select('tax_rate_2_id', $taxRates, $item->tax_rate_2_id, ['class' => 'form-control']) !!}</td>
+                                       <!-- <td>{!! Form::select('tax_rate_2_id', $taxRates, $item->tax_rate_2_id, ['class' => 'form-control']) !!}</td>-->
                                         <td style="text-align: right; padding-right: 25px;">{{ $item->amount->formatted_subtotal }}</td>
                                         <td>
                                             <a class="btn btn-xs btn-default btn-delete-invoice-item" href="javascript:void(0);"
@@ -364,7 +368,7 @@
                         <label>{{ trans('fi.invoice') }} #</label>
                         {!! Form::text('number', $invoice->number, ['id' => 'number', 'class' =>
                         'form-control
-                        input-sm']) !!}
+                        input-sm', 'readonly'=>'true']) !!}
                     </div>
 
                     <div class="form-group">
@@ -385,7 +389,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label>{{ trans('fi.due_date') }}</label>
+                        <label>Payment Due Date</label>
                         {!! Form::text('due_at', $invoice->formatted_due_at, ['id' => 'due_at', 'class'
                         => 'form-control input-sm']) !!}
                     </div>

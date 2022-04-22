@@ -18,6 +18,8 @@ use FI\Support\FileNames;
 use FI\Support\PDF\PDFFactory;
 use FI\Support\Statuses\InvoiceStatuses;
 use FI\Traits\ReturnUrl;
+use Addons\Scheduler\Models\Schedule;
+use FI\Modules\CustomFields\Models\CustomField;
 
 class InvoiceController extends Controller
 {
@@ -45,13 +47,36 @@ class InvoiceController extends Controller
             ->with('invoices', $invoices)
             ->with('status', $status)
             ->with('statuses', InvoiceStatuses::listsAllFlat() + ['overdue' => trans('fi.overdue')])
-            ->with('keyedStatuses', collect(InvoiceStatuses::lists())->except(3))
+            ->with('keyedStatuses', collect(InvoiceStatuses::lists()))
             ->with('companyProfiles', ['' => trans('fi.all_company_profiles')] + CompanyProfile::getList())
             ->with('displaySearch', true);
     }
 
     public function delete($id)
     {
+	$invoice = Invoice::find($id);
+        
+       	if($invoice->quote()->count()){
+            
+            $event =  Schedule::select('*')
+                ->where('quotes_id', $invoice->quote->id)
+                ->first();
+            if(!empty($event)){
+    		$event->url   = route('quotes.edit', [$invoice->quote->id]);
+		                $event->category_id = $invoice->quote->quote_status_id;
+		                $event->invoices_id = 0;
+		                $event->save();
+            }
+        }else{
+   
+            $event =  Schedule::select('*')
+                ->where('invoices_id', $invoice->id)
+                ->first();
+            if(!empty($event)){
+    		$event->delete();
+            }
+        }
+
         Invoice::destroy($id);
 
         return redirect()->route('invoices.index')
@@ -60,6 +85,32 @@ class InvoiceController extends Controller
 
     public function bulkDelete()
     {
+	foreach(request('ids') as $id){
+            $invoice = Invoice::find($id);
+            
+        
+            if($invoice->quote()->count()){
+                
+                $event =  Schedule::select('*')
+                    ->where('quotes_id', $invoice->quote->id)
+                    ->first();
+                    if(!empty($event)){
+        		        $event->url   = route('quotes.edit', [$invoice->quote->id]);
+		                $event->category_id = $invoice->quote->quote_status_id;
+		                $event->invoices_id = 0;
+		                $event->save();
+                    }
+            }else{
+       
+                $event =  Schedule::select('*')
+                    ->where('invoices_id', $invoice->id)
+                    ->first();
+                    if(!empty($event)){
+        		$event->delete();
+                    }
+            }
+            
+        }
         Invoice::destroy(request('ids'));
     }
 
@@ -68,6 +119,29 @@ class InvoiceController extends Controller
         Invoice::whereIn('id', request('ids'))
             ->where('invoice_status_id', '<>', InvoiceStatuses::getStatusId('paid'))
             ->update(['invoice_status_id' => request('status')]);
+	foreach(request('ids') as $id){
+            $invoice = Invoice::find($id);
+            if($invoice->quote()->count()){
+                $quote = Quote::select('*')
+                    ->where('invoice_id', $id)
+                    ->first();
+                $event =  Schedule::select('*')
+                    ->where('quotes_id', $quote->id)
+                    ->first();
+			if(!empty($event)){
+        		$event->category_id = number_format(request('status'))+4;
+        		$event->save();
+			}
+            }else{
+                $event =  Schedule::select('*')
+                    ->where('invoices_id', $id)
+                    ->first();
+			if(!empty($event)){
+        		$event->category_id = number_format(request('status'))+4;
+        		$event->save();
+			}
+            }
+        }
     }
 
     public function pdf($id)
@@ -85,6 +159,7 @@ class InvoiceController extends Controller
         
         $file = view('templates.checklist.invoiceChecklist')
             ->with('invoice', $invoice)
+	   ->with('customFields', CustomField::forTable('invoices')->get())
             ->with('logo', $invoice->companyProfile->logo())->render();
 
         $pdf = PDFFactory::create();
@@ -100,4 +175,14 @@ class InvoiceController extends Controller
         return view('invoices.print')
             ->with('invoice', $invoice);
     }
+
+	public function itemChecklistPrint($id)
+	{
+		$invoice = Invoice::find($id);
+//		return $invoice->custom->column_9;
+		return view('invoices.itemChecklistPrint')
+			->with('invoice', $invoice)
+			->with('customFields', CustomField::forTable('invoices')->get())
+			->with('logo', $invoice->companyProfile->logo())->render();
+	}
 }

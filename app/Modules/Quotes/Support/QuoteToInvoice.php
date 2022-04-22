@@ -19,6 +19,7 @@ use FI\Modules\Invoices\Models\InvoiceItem;
 use FI\Support\Statuses\InvoiceStatuses;
 use FI\Support\Statuses\QuoteStatuses;
 use Addons\Scheduler\Models\Schedule;
+use FI\Support\DateFormatter;
 
 class QuoteToInvoice
 {
@@ -28,7 +29,7 @@ class QuoteToInvoice
             'client_id'          => $quote->client_id,
             'invoice_date'       => $invoiceDate,
             'event_date'       => $quote->event_date,
-            'due_at'             => $dueAt,
+            'due_at'             => DateFormatter::unformat(date("m/d/Y", strtotime($quote->event_date . "-3 week"))),
             'group_id'           => $groupId,
             // 'number'             => Group::generateNumber($groupId),
             'number'             => str_replace("QUO", "INV", $quote->number),

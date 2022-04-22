@@ -89,6 +89,14 @@
             <span class="info">{{ mb_strtoupper(trans('fi.expires')) }}</span> {{ $quote->formatted_expires_at }}<br><br>
             <span class="info">{{ mb_strtoupper(trans('fi.bill_to')) }}</span><br>{{ $quote->client->name }}<br>
             @if ($quote->client->address) {!! $quote->client->formatted_address !!}<br>@endif
+		<br>
+			@if ($customFields->count())
+				@foreach ($customFields as $customField)
+					@if ($customField->field_type == 'textarea' && $customField->column_name == 'column_9')
+						<span class="info">VENUE ADDRESS</span><br>{{$quote->custom->column_9}}<br>
+					@endif
+				@endforeach
+			@endif
         </td>
         <td style="width: 50%; text-align: right;" valign="top">
             {!! $quote->companyProfile->logo(150) !!}<br>
@@ -100,9 +108,19 @@
     </tr>
 </table>
 
+<table>
+	<tr>
+		<th style="text-align:left;">Notes:</th>
+	</tr>
+	<tr>
+		<td  style="width:100%;height:50px;border:1px solid #818181"></td>
+	</tr>
+</table>
+
 <table class="alternate">
     <thead>
     <tr>
+	<th></th>
         <th>{{ mb_strtoupper(trans('fi.product')) }}</th>
         <th>{{ mb_strtoupper(trans('fi.description')) }}</th>
         <th class="amount">{{ mb_strtoupper(trans('fi.quantity')) }}</th>
@@ -111,6 +129,7 @@
     <tbody>
     @foreach ($quote->items as $item)
         <tr>
+		<td><input type="checkbox" /></td>
             <td>{!! $item->name !!}</td>
             <td>{!! $item->formatted_description !!}</td>
             <td nowrap class="amount">{{ $item->formatted_quantity }}</td>
@@ -141,6 +160,13 @@
     <!--    <td class="amount">{{ $quote->amount->formatted_total }}</td>-->
     <!--</tr>-->
     </tbody>
+</table>
+
+<table>
+<tr>
+<td style="width:50%;text-align:left;font-weight:bold;">Signature</td>
+<td style="width:50%;text-align:right;font-weight:bold;">Date</td>
+</tr>
 </table>
 
 @if ($quote->terms)

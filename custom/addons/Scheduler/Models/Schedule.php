@@ -19,7 +19,7 @@ use FI\Modules\Invoices\Models\Invoice;
 
 
 class Schedule extends Model {
-    use SoftDeletes;
+   use SoftDeletes;
 
     protected $dates = ['deleted_at'];
 
@@ -75,7 +75,10 @@ class Schedule extends Model {
     
     public function getNum()
     {
-        return $this->id;
+        if($this->invoices()->count()>0 || $this->quotes()->count()>0){
+            return $this->quotes_id==0 ? $this->invoices->number : $this->category_id>4 ? $this->invoices->number : $this->quotes->number;
+        }
+        return null;
     }
 
 }

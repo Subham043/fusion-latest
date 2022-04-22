@@ -34,14 +34,15 @@ class InvoiceEditController extends Controller
 
     public function edit($id)
     {
-        
+        $inventoryList = Inventory::getList();
+        $inventoryList["null"] = "Select a product";
         $invoice = Invoice::with(['items.amount.item.invoice.currency'])->find($id);
 //echo "<pre>"; print_r($invoice);exit;
         return view('invoices.edit')
             ->with('invoice', $invoice)
             ->with('statuses', InvoiceStatuses::lists())
             ->with('currencies', Currency::getList())
-            ->with('inventory', Inventory::getList())
+            ->with('inventory', $inventoryList)
             ->with('taxRates', TaxRate::getList())
             ->with('customFields', CustomField::forTable('invoices')->get())
             ->with('returnUrl', $this->getReturnUrl())
@@ -172,13 +173,15 @@ class InvoiceEditController extends Controller
 
     public function refreshEdit($id)
     {
+	$inventoryList = Inventory::getList();
+        $inventoryList["null"] = "Select a product";
         $invoice = Invoice::with(['items.amount.item.invoice.currency'])->find($id);
 
         return view('invoices._edit')
             ->with('invoice', $invoice)
             ->with('statuses', InvoiceStatuses::lists())
             ->with('currencies', Currency::getList())
-            ->with('inventory', Inventory::getList())
+            ->with('inventory', $inventoryList)
             ->with('taxRates', TaxRate::getList())
             ->with('customFields', CustomField::forTable('invoices')->get())
             ->with('returnUrl', $this->getReturnUrl())

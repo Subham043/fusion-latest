@@ -84,13 +84,13 @@ class SchedulerController extends Controller
         $data['status'] = (request('status')) ?: 'now';
 
         $data['events'] = Schedule::withOccurrences()->with(['resources','quotes','invoices'])->whereDate('start_date', '>=',
-                            Carbon::now()->subDays(config('schedule_settings.pastdays')))->get();//->last();
+                            Carbon::now()->subDays(config('schedule_settings.pastdays')))->whereNotIn('category_id', array(4, 5, 10))->get();//->last();
                             
                             
         // $data['categories'] = Category::pluck('name','id');
-        $data['categories'] = Category::select('*')->where('id', '>', 9)->orderBy('id')->get()->pluck( 'name', 'id' );
+        $data['categories'] = Category::select('*')->where('id', '>', 10)->orderBy('id')->get()->pluck( 'name', 'id' );
         
-        $colors = Category::select('*')->where('id', '<', 10)->orderBy('id')->get();
+        $colors = Category::select('*')->where('id', '<', 11)->orderBy('id')->get();
         
         $data['catbglist'] = Category::pluck('bg_color','id');
         

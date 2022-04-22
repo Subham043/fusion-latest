@@ -347,7 +347,7 @@
                             @endif
                     var tooltip = '<div class="tooltipevent" style="width:200px;background:#eee;position:absolute;z-index:10001;">'
                         + event.num + '<br>'
-                        + dateFormat(event.start, "mmm dd HH:MM", "Mountain") + ' to ' + dateFormat(event.end, "HH:MM", "Mountain") + '<br>'
+                       // + dateFormat(event.start, "mmm dd HH:MM", "Mountain") + ' to ' + dateFormat(event.end, "HH:MM", "Mountain") + '<br>'
                         + event.description
                         + '<br>'
                         + rstr
@@ -387,7 +387,7 @@
                         @endif
                         url: "{!! $event->url !!}",
                         willcall: "{!! $event->will_call !!}",
-                        num: "#{!! $event->quotes_id==0 ? $event->invoices->number : $event->category_id>4 ? $event->invoices->number : $event->quotes->number !!}",
+                        num: "#{!! $event->getNum() !!}",
                         //occurrences
                         oid: "{!! $event->oid !!}",
                         start: "{!! date('Y-m-d H:i', strtotime($event->start_date )) !!}",

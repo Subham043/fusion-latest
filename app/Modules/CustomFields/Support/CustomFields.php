@@ -43,6 +43,7 @@ class CustomFields
             'text'     => trans('fi.text'),
             'dropdown' => trans('fi.dropdown'),
             'textarea' => trans('fi.textarea'),
+	   'date'=>'Date'
         ];
     }
 }

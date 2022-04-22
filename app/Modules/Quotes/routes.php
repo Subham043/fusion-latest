@@ -21,6 +21,7 @@ Route::group(['middleware' => ['web', 'auth.admin'], 'namespace' => 'FI\Modules\
         Route::get('{id}/delete', ['uses' => 'QuoteController@delete', 'as' => 'quotes.delete']);
         Route::get('{id}/pdf', ['uses' => 'QuoteController@pdf', 'as' => 'quotes.pdf']);
         Route::get('{id}/item-checklist', ['uses' => 'QuoteController@itemChecklist', 'as' => 'quotes.itemChecklist']);
+	Route::get('{id}/item-checklist-print', ['uses' => 'QuoteController@itemChecklistPrint', 'as' => 'quotes.itemChecklistPrint']);
 
         Route::get('{id}/edit/refresh', ['uses' => 'QuoteEditController@refreshEdit', 'as' => 'quoteEdit.refreshEdit']);
         Route::post('edit/refresh_to', ['uses' => 'QuoteEditController@refreshTo', 'as' => 'quoteEdit.refreshTo']);

@@ -36,6 +36,14 @@
                         </div>
                     </div>
 
+		    <div class="form-group">
+                        <label class="col-sm-3 control-label">{{ trans('fi.event_date') }}</label>
+
+                        <div class="col-sm-9">
+                            {!! Form::text('event_date', date(config('fi.dateFormat')), ['id' => 'create_event_date', 'class' => 'form-control']) !!}
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label class="col-sm-3 control-label">{{ trans('fi.Invoice_date') }}</label>
 

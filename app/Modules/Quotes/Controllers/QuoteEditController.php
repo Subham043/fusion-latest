@@ -35,6 +35,8 @@ class QuoteEditController extends Controller
 
     public function edit($id)
     {
+	$inventoryList = Inventory::getList();
+        $inventoryList["null"] = "Select a product";
         $quote = Quote::with(['items.amount.item.quote.currency'])->find($id);
         
         // return $quote->getReservedQuantity('chair');
@@ -43,7 +45,7 @@ class QuoteEditController extends Controller
             ->with('quote', $quote)
             ->with('statuses', QuoteStatuses::lists())
             ->with('currencies', Currency::getList())
-            ->with('inventory', Inventory::getList())
+            ->with('inventory', $inventoryList)
             ->with('taxRates', TaxRate::getList())
             ->with('customFields', CustomField::forTable('quotes')->get())
             ->with('returnUrl', $this->getReturnUrl())
@@ -152,13 +154,15 @@ class QuoteEditController extends Controller
 
     public function refreshEdit($id)
     {
+	$inventoryList = Inventory::getList();
+        $inventoryList["null"] = "Select a product";
         $quote = Quote::with(['items.amount.item.quote.currency'])->find($id);
 
         return view('quotes._edit')
             ->with('quote', $quote)
             ->with('statuses', QuoteStatuses::lists())
             ->with('currencies', Currency::getList())
-            ->with('inventory', Inventory::getList())
+            ->with('inventory', $inventoryList)
             ->with('taxRates', TaxRate::getList())
             ->with('customFields', CustomField::forTable('quotes')->get())
             ->with('returnUrl', $this->getReturnUrl())

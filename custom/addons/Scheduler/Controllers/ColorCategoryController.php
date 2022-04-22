@@ -17,7 +17,7 @@ use Illuminate\Http\Request;
 class ColorCategoryController extends Controller {
 	public function index() {
 		$categories = Category::select('*')
-            ->limit(9)
+            ->limit(10)
             ->orderBy('id')
             ->get();
 

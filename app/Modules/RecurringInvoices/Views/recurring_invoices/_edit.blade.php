@@ -13,9 +13,9 @@
                 <li><a href="javascript:void(0)" id="btn-copy-recurring-invoice"><i
                             class="fa fa-copy"></i> {{ trans('fi.copy') }}</a></li>
                 <li class="divider"></li>
-                <li><a href="{{ route('recurringInvoices.delete', [$recurringInvoice->id]) }}"
+              <!--  <li><a href="{{ route('recurringInvoices.delete', [$recurringInvoice->id]) }}"
                        onclick="return confirm('{{ trans('fi.delete_record_warning') }}');"><i
-                            class="fa fa-trash-o"></i> {{ trans('fi.delete') }}</a></li>
+                            class="fa fa-trash-o"></i> {{ trans('fi.delete') }}</a></li> -->
             </ul>
         </div>
 
@@ -102,7 +102,7 @@
                                     <th style="width: 10%;">{{ trans('fi.qty') }}</th>
                                     <th style="width: 10%;">{{ trans('fi.price') }}</th>
                                     <th style="width: 10%;">{{ trans('fi.tax_1') }}</th>
-                                    <th style="width: 10%;">{{ trans('fi.tax_2') }}</th>
+                                   <!-- <th style="width: 10%;">{{ trans('fi.tax_2') }}</th>-->
                                     <th style="width: 10%; text-align: right; padding-right: 25px;">{{ trans('fi.total') }}</th>
                                     <th style="width: 5%;"></th>
                                 </tr>
@@ -112,14 +112,15 @@
                                     <td>
                                         {!! Form::hidden('recurring_invoice_id', $recurringInvoice->id) !!}
                                         {!! Form::hidden('id', '') !!}
-                                        {!! Form::text('name', null, ['class' => 'form-control']) !!}<br>
-                                        <label><input type="checkbox" name="save_item_as_lookup" tabindex="999"> {{ trans('fi.save_item_as_lookup') }}</label>
+                                       <!-- {!! Form::text('name', null, ['class' => 'form-control']) !!}<br>-->
+                                        <input type="hidden" name="save_item_as_lookup" tabindex="999" />
+					{!! Form::select('name', $inventory, null, ['class' => 'form-control']) !!}<br />
                                     </td>
                                     <td>{!! Form::textarea('description', null, ['class' => 'form-control', 'rows' => 1]) !!}</td>
                                     <td>{!! Form::text('quantity', null, ['class' => 'form-control']) !!}</td>
                                     <td>{!! Form::text('price', null, ['class' => 'form-control']) !!}</td>
                                     <td>{!! Form::select('tax_rate_id', $taxRates, config('fi.itemTaxRate'), ['class' => 'form-control']) !!}</td>
-                                    <td>{!! Form::select('tax_rate_2_id', $taxRates, config('fi.itemTax2Rate'), ['class' => 'form-control']) !!}</td>
+                                   <!-- <td>{!! Form::select('tax_rate_2_id', $taxRates, config('fi.itemTax2Rate'), ['class' => 'form-control']) !!}</td>-->
                                     <td></td>
                                     <td></td>
                                 </tr>
@@ -128,13 +129,14 @@
                                         <td>
                                             {!! Form::hidden('recurring_invoice_id', $recurringInvoice->id) !!}
                                             {!! Form::hidden('id', $item->id) !!}
-                                            {!! Form::text('name', $item->name, ['class' => 'form-control item-lookup']) !!}
+                                           <!-- {!! Form::text('name', $item->name, ['class' => 'form-control item-lookup']) !!}-->
+						{!! Form::select('name', $inventory, $item->name, ['class' => 'form-control']) !!}
                                         </td>
                                         <td>{!! Form::textarea('description', $item->description, ['class' => 'form-control', 'rows' => 1]) !!}</td>
                                         <td>{!! Form::text('quantity', $item->formatted_quantity, ['class' => 'form-control']) !!}</td>
                                         <td>{!! Form::text('price', $item->formatted_numeric_price, ['class' => 'form-control']) !!}</td>
                                         <td>{!! Form::select('tax_rate_id', $taxRates, $item->tax_rate_id, ['class' => 'form-control']) !!}</td>
-                                        <td>{!! Form::select('tax_rate_2_id', $taxRates, $item->tax_rate_2_id, ['class' => 'form-control']) !!}</td>
+                                       <!-- <td>{!! Form::select('tax_rate_2_id', $taxRates, $item->tax_rate_2_id, ['class' => 'form-control']) !!}</td>-->
                                         <td style="text-align: right; padding-right: 25px;">{{ $item->amount->formatted_subtotal }}</td>
                                         <td>
                                             <a class="btn btn-xs btn-default btn-delete-recurring-invoice-item" href="javascript:void(0);"
@@ -147,7 +149,10 @@
                                 </tbody>
                             </table>
                         </div>
-
+			<div class="box-body">
+                            <label><a href="{{ route('inventory.create') }}" class="btn btn-primary btn-sm" ><i
+                                        class="fa fa-plus"></i> Add new item in inventory</a></label>
+                        </div>
                     </div>
                 </div>
 

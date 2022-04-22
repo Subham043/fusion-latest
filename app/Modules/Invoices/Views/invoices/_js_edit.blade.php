@@ -4,7 +4,7 @@
 
         $("#event_date").datepicker({format: '{{ config('fi.datepickerFormat') }}', autoclose: true, startDate: new Date()});
         $("#invoice_date").datepicker({format: '{{ config('fi.datepickerFormat') }}', autoclose: true, startDate: new Date()});
-        $("#due_at").datepicker({format: '{{ config('fi.datepickerFormat') }}', autoclose: true, startDate: new Date()});
+        $("#due_at").datepicker({format: '{{ config('fi.datepickerFormat') }}', autoclose: true});
         $('textarea').autosize();
 
         $('#btn-copy-invoice').click(function () {

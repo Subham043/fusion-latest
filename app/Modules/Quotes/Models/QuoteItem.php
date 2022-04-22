@@ -163,7 +163,10 @@ class QuoteItem extends Model
             ->whereIn('invoices.invoice_status_id', array(3,4))
             ->get();
         if($query[0]->sum==null){
-            return (int)$inventory->total;
+            if(!empty($inventory)){
+                return (int)$inventory->total;
+            }
+            return 0;
         }
         return (int)$inventory->total-(int)$query[0]->sum;
     }

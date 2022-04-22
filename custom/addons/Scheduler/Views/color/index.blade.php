@@ -23,7 +23,7 @@
                                 <th>{{ trans('Scheduler::texts.category_name') }}</th>
                                 <th>{{ trans('Scheduler::texts.category_text_color') }}</th>
                                 <th>{{ trans('Scheduler::texts.category_bg_color') }}</th>
-                                <th>Actions</th>
+                               <!-- <th>Actions</th> -->
                             </tr>
                             </thead>
                             <tbody>
@@ -37,11 +37,11 @@
                                     <td>{!! $category->bg_color !!}&nbsp;&nbsp;&nbsp;<i class="fa fa-square"
                                                                                         style="color:{!! $category->bg_color !!}"></i>
                                     </td>
-                                    <td>
+                                   <!-- <td>
                                         <a class="btn btn-primary iframe"
                                            href="{{ route('scheduler.colors.edit', [$category->id]) }}"><i
                                                     class="fa fa-fw fa-edit"></i>{{ trans('Scheduler::texts.edit') }}</a>
-                                    </td>
+                                    </td>-->
                                 </tr>
                             @endforeach
                             </tbody>

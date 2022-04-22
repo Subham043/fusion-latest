@@ -32,7 +32,7 @@
                                 <th>{!! Sortable::link('price', trans('fi.price')) !!}</th>
                                 <th>{{ trans('fi.total_q') }}</th>
                                 <th>{{ trans('fi.tax_1') }}</th>
-                                <th>{{ trans('fi.tax_2') }}</th>
+                               <!-- <th>{{ trans('fi.tax_2') }}</th>-->
                                 <th>{{ trans('fi.options') }}</th>
                             </tr>
                             </thead>
@@ -45,7 +45,7 @@
                                     <td>{{ $itemLookup->formatted_price }}</td>
                                     <td>{{ $itemLookup->total }}</td>
                                     <td>{{ $itemLookup->taxRate->name or '' }}</td>
-                                    <td>{{ $itemLookup->taxRate2->name or '' }}</td>
+                                   <!-- <td>{{ $itemLookup->taxRate2->name or '' }}</td>-->
                                     <td>
                                         <div class="btn-group">
                                             <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
@@ -53,7 +53,7 @@
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-right">
                                                 <li><a href="{{ route('itemLookups.edit', [$itemLookup->id]) }}"><i class="fa fa-edit"></i> {{ trans('fi.edit') }}</a></li>
-                                                <li><a href="{{ route('itemLookups.delete', [$itemLookup->id]) }}" onclick="return confirm('{{ trans('fi.delete_record_warning') }}');"><i class="fa fa-trash-o"></i> {{ trans('fi.delete') }}</a></li>
+                                               <!-- <li><a href="{{ route('itemLookups.delete', [$itemLookup->id]) }}" onclick="return confirm('{{ trans('fi.delete_record_warning') }}');"><i class="fa fa-trash-o"></i> {{ trans('fi.delete') }}</a></li> -->
                                             </ul>
                                         </div>
                                     </td>

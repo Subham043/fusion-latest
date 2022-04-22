@@ -106,9 +106,13 @@
     </div>
 
     
-</div>
+	<div class="col-md-3" id="col-client-special" style="display:none;">
+        <div class="form-group">
+            <label>Prepayment Override for Corporate</label>
+            {!! Form::select('special', ['0' => trans('fi.no'), '1' => trans('fi.yes')], ((isset($editMode) and $editMode) ? null : 0), ['id' => 'special', 'class' => 'form-control']) !!}
+        </div>
+    </div>
 
-<div class="row">
     <div class="col-md-3">
         <div class="form-group">
             <label>{{ trans('fi.web_address') }}: </label>
