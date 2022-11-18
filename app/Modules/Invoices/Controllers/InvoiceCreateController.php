@@ -13,6 +13,7 @@ namespace FI\Modules\Invoices\Controllers;
 
 use FI\Http\Controllers\Controller;
 use FI\Modules\Clients\Models\Client;
+use FI\Modules\MasterClients\Models\MasterClient;
 use FI\Modules\CompanyProfiles\Models\CompanyProfile;
 use FI\Modules\Groups\Models\Group;
 use FI\Modules\Invoices\Models\Invoice;
@@ -21,13 +22,25 @@ use FI\Support\DateFormatter;
 use Addons\Scheduler\Models\Schedule;
 use Addons\Scheduler\Models\ScheduleOccurrence;
 use Auth;
+use Illuminate\Support\Facades\Storage;
+use File;
+
 
 class InvoiceCreateController extends Controller
 {
     public function create()
     {
+
+	$masterClient = MasterClient::get();
+	if(count($masterClient)>0){
+		$client = Client::where('master_client_id', $masterClient[0]->id)->get()->pluck('name', 'id');
+	}else{
+		$client = [];
+	}
         return view('invoices._modal_create')
             ->with('companyProfiles', CompanyProfile::getList())
+	    ->with('MasterClient', MasterClient::pluck('name', 'id')->all())
+	    ->with('Client', $client)
             ->with('groups', Group::getList());
     }
 
@@ -47,6 +60,8 @@ class InvoiceCreateController extends Controller
         $input['group_id'] = 1;
 
         $invoice = Invoice::create($input);
+
+	
         
         $event =  new Schedule();
 		$event->title       = $invoice->client->name;

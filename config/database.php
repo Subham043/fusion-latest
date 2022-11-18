@@ -13,8 +13,8 @@ return [
         'mysql' => [
             'host'      => 'localhost',
             'database'  => 'fusioninvoicedev',
-            'username'  => 'fusioninv',
-            'password'  => 'sdfUdf1@ggf5',
+            'username'  => 'samubuntu',
+            'password'  => 'Uatdev@123',
             'prefix'    => '',
 
             'driver'    => 'mysql',

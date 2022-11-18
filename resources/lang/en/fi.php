@@ -132,6 +132,7 @@ return [
     'date'                                    => 'Date',
     'quote_date'                                    => 'Quote Date',
     'event_date'                                    => 'Event Date',
+    'event_name'                                    => 'Event Name',
     'date_format'                             => 'Date Format',
     'days'                                    => 'Days',
     'decimal_point'                           => 'Decimal Point',

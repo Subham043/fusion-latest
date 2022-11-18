@@ -81,7 +81,7 @@
 
 <table>
     <tr>
-        <td style="width: 50%;" valign="top">
+    <td style="width: 33%;" valign="top">
             <h1>{{ mb_strtoupper(trans('fi.quote')) }}</h1>
             <span class="info">{{ mb_strtoupper(trans('fi.quote')) }} #</span>{{ $quote->number }}<br>
             <span class="info">{{ mb_strtoupper(trans('fi.issued')) }}</span> {{ $quote->formatted_created_at }}<br>
@@ -90,7 +90,8 @@
             <span class="info">{{ mb_strtoupper(trans('fi.bill_to')) }}</span><br>{{ $quote->client->name }}<br>
             @if ($quote->client->address) {!! $quote->client->formatted_address !!}<br>@endif
         </td>
-        <td style="width: 50%; text-align: right;" valign="top">
+        <td style="width: 33%;"><h4 style="display:block;margin:auto;text-align: center;">{{ $quote->summary }}</h4></td>
+        <td style="width: 33%; text-align: right;" valign="top">
             {!! $quote->companyProfile->logo(150) !!}<br>
             {{ $quote->companyProfile->company }}<br>
             {!! $quote->companyProfile->formatted_address !!}<br>
@@ -120,6 +121,19 @@
             <td nowrap class="amount">{{ $item->amount->formatted_subtotal }}</td>
         </tr>
     @endforeach
+
+@if($quote->groupitems()->count()>0)
+@foreach ($quote->groupitems as $item)
+        <tr>
+            <td>{!! $item->name !!}</td>
+            <td>{!! $item->formatted_description !!}</td>
+            <td nowrap class="amount">{{ $item->formatted_quantity }}</td>
+	    <td nowrap class="amount">${{ number_format((float)$item->total, 2, '.', '') }}</td>
+            <td nowrap class="amount">${{ number_format((float)$item->total, 2, '.', '') }}</td>
+        </tr>
+@endforeach
+@endif
+
 
     <tr>
         <td colspan="4" class="amount">{{ mb_strtoupper(trans('fi.subtotal')) }}</td>

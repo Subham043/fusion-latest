@@ -18,7 +18,7 @@ Route::group(['prefix' => 'client_center', 'middleware' => 'web', 'namespace' =>
     Route::get('quote/{quoteKey}', ['uses' => 'ClientCenterPublicQuoteController@show', 'as' => 'clientCenter.public.quote.show']);
     Route::get('quote/{quoteKey}/pdf', ['uses' => 'ClientCenterPublicQuoteController@pdf', 'as' => 'clientCenter.public.quote.pdf']);
     Route::get('quote/{quoteKey}/html', ['uses' => 'ClientCenterPublicQuoteController@html', 'as' => 'clientCenter.public.quote.html']);
-    Route::get('quote/{quoteKey}/approve', ['uses' => 'ClientCenterPublicQuoteController@approve', 'as' => 'clientCenter.public.quote.approve']);
+    Route::post('quote/{quoteKey}/approve', ['uses' => 'ClientCenterPublicQuoteController@approve', 'as' => 'clientCenter.public.quote.approve']);
     Route::get('quote/{quoteKey}/reject', ['uses' => 'ClientCenterPublicQuoteController@reject', 'as' => 'clientCenter.public.quote.reject']);
 
     Route::group(['middleware' => 'auth.clientCenter'], function ()

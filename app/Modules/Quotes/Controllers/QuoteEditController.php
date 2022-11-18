@@ -28,6 +28,11 @@ use Addons\Scheduler\Models\Schedule;
 use Addons\Scheduler\Models\ScheduleOccurrence;
 use FI\Modules\Inventory\Models\Inventory;
 use FI\Modules\Invoices\Models\Invoice;
+use FI\Modules\InventoryGroupList\Models\InventoryGroupList;
+use FI\Modules\Quotes\Models\QuoteGroupItem;
+use Illuminate\Support\Facades\Storage;
+use File;
+
 
 class QuoteEditController extends Controller
 {
@@ -37,6 +42,11 @@ class QuoteEditController extends Controller
     {
 	$inventoryList = Inventory::getList();
         $inventoryList["null"] = "Select a product";
+	$inventory_group_list = InventoryGroupList::getList();
+	$inventory_group_list["null"] = "Select a group";
+
+	//echo '<pre>';print_r($inventoryList);exit;
+
         $quote = Quote::with(['items.amount.item.quote.currency'])->find($id);
         
         // return $quote->getReservedQuantity('chair');
@@ -45,9 +55,10 @@ class QuoteEditController extends Controller
             ->with('quote', $quote)
             ->with('statuses', QuoteStatuses::lists())
             ->with('currencies', Currency::getList())
+	    ->with('inventory_group_list', $inventory_group_list)
             ->with('inventory', $inventoryList)
             ->with('taxRates', TaxRate::getList())
-            ->with('customFields', CustomField::forTable('quotes')->get())
+            ->with('customFields', CustomField::forTable('quotes')->orderBy('order_by', 'ASC')->get())
             ->with('returnUrl', $this->getReturnUrl())
             ->with('templates', QuoteTemplates::lists())
             ->with('itemCount', count($quote->quoteItems));
@@ -56,7 +67,7 @@ class QuoteEditController extends Controller
     public function update(QuoteUpdateRequest $request, $id)
     {
         // Unformat the quote dates.
-        $input               = $request->except(['items', 'custom', 'apply_exchange_rate']);
+        $input               = $request->except(['items', 'group_items', 'custom', 'apply_exchange_rate']);
         
         $input['quote_date'] = DateFormatter::unformat($input['quote_date']);
         $input['event_date'] = DateFormatter::unformat($input['event_date']);
@@ -65,12 +76,13 @@ class QuoteEditController extends Controller
         // Save the quote.
         $quote = Quote::find($id);
         $exist_quote = Quote::where('client_id',$quote->client_id)->where('event_date',$input['event_date'])->where('id', '<>', $quote->id)->get();
-        if(count($exist_quote)>0){
-             return response()->json(['message' => 'Another event exists on the same date by the same client'], 422);
-        }
+       // if(count($exist_quote)>0){
+         //    return response()->json(['message' => 'Another event exists on the same date by the same client'], 422);
+        //}
        
         $quote->fill($input);
         $quote->save();
+
         
         // save the event color
         $event =  Schedule::select('*')
@@ -92,6 +104,14 @@ class QuoteEditController extends Controller
 		$invoice->event_date = $input['event_date'];
 		$invoice->save();
 		}
+
+if(!empty($request->input('custom')['column_6']) && !empty($request->input('custom')['column_5'])){
+$date1 = date('Y-m-d', strtotime($request->input('custom')['column_6']));
+$date2 = date('Y-m-d', strtotime($request->input('custom')['column_5']));
+if ($date2 < $date1){   
+	return response()->json(['message' => 'Event End Date must be smaller to Event Start Date'], 422);
+}
+}
 
         // Save the custom fields.
             $quote->custom->update($request->input('custom', []));
@@ -148,6 +168,54 @@ class QuoteEditController extends Controller
                 $quoteItem->save();
             }
         }
+	
+	if(!empty($request->input('group_items'))){
+
+	foreach ($request->input('group_items') as $item)
+        {
+                        
+            $inventory = InventoryGroupList::find($item['inventory_group_list_id']);
+
+            if (!isset($item['id']) or (!$item['id']))
+            {
+
+                $test = QuoteGroupItem::create([
+                        'name'          => $item['group_name'],
+                        'description'   => $item['group_description'],
+                        'price'         => $item['group_price'],
+			'total'         => $item['group_price']*$item['group_quantity'],
+			'quantity'         => $item['group_quantity'],
+			'display_order'         => $item['display_order'],
+			'quote_id'         => $item['quote_id'],
+                        'inventory_group_list_id' => $item['inventory_group_list_id'],
+                    ]);
+            }
+            else
+            {                
+                $invoiceItem = QuoteGroupItem::find($item['id']);
+                
+                $invoiceItem->fill([
+			'name'          => $item['group_name'],
+                        'description'   => $item['group_description'],
+                        'price'         => $item['group_price'],
+			'total'         => $item['group_price']*$item['group_quantity'],
+			'quantity'         => $item['group_quantity'],
+			'display_order'         => $item['display_order'],
+			'quote_id'         => $item['quote_id'],
+                        'inventory_group_list_id' => $item['inventory_group_list_id'],
+                    ]);
+                $invoiceItem->save();
+            }
+        }
+	}
+
+	
+	$url = "CHK-".$quote->id;
+
+	$barcode = new \FI\Modules\Inventory\Barcode\Barcode();
+	$bobj = $barcode->getBarcodeObj('C128', $url, 0, -30, 'black', array(0, 0, 0, 0));
+  	Storage::put('public/barcode/quote-item-checklist-'.$quote->id.'-barcode.png', $bobj->getPngData());
+	File::move(storage_path('app/public/barcode/quote-item-checklist-'.$quote->id.'-barcode.png'), public_path('assets/barcode/quote-item-checklist-'.$quote->id.'-barcode.png'));
 
         return response()->json(['success' => true], 200);
     }
@@ -156,6 +224,9 @@ class QuoteEditController extends Controller
     {
 	$inventoryList = Inventory::getList();
         $inventoryList["null"] = "Select a product";
+	$inventory_group_list = InventoryGroupList::getList();
+	$inventory_group_list["null"] = "Select a group";
+
         $quote = Quote::with(['items.amount.item.quote.currency'])->find($id);
 
         return view('quotes._edit')
@@ -163,8 +234,9 @@ class QuoteEditController extends Controller
             ->with('statuses', QuoteStatuses::lists())
             ->with('currencies', Currency::getList())
             ->with('inventory', $inventoryList)
+	    ->with('inventory_group_list', $inventory_group_list)
             ->with('taxRates', TaxRate::getList())
-            ->with('customFields', CustomField::forTable('quotes')->get())
+            ->with('customFields', CustomField::forTable('quotes')->orderBy('order_by', 'ASC')->get())
             ->with('returnUrl', $this->getReturnUrl())
             ->with('templates', QuoteTemplates::lists())
             ->with('itemCount', count($quote->quoteItems));

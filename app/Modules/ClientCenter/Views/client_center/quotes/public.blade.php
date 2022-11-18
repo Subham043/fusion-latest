@@ -10,7 +10,18 @@
                 $('#' + $(this).data('button-toggle')).show();
                 $(this).hide();
             });
+	    
+
         });
+$(function () {
+$('#view-docusign').hide();
+	    $('.btn-docusign').click(function () {
+                $('#view-doc').toggle();
+                $('#view-docusign').toggle();
+                $('#' + $(this).data('button-toggle')).show();
+                $(this).hide();
+            });
+});
     </script>
 @stop
 
@@ -50,9 +61,15 @@
                     </div>
                 @endif
                 @if (in_array($quote->status_text, ['draft', 'sent']))
-                    <a href="{{ route('clientCenter.public.quote.approve', [$quote->url_key]) }}" class="btn btn-primary"
+                    <!--<a href="{{ route('clientCenter.public.quote.approve', [$quote->url_key]) }}" class="btn btn-primary"
                        onclick="return confirm('{{ trans('fi.confirm_approve_quote') }}');">
                         <i class="fa fa-thumbs-up"></i> {{ trans('fi.approve') }}
+                    </a>-->
+			<a href="javascript:void(0)" id="btn-docusign" data-button-toggle="btn-docusign-back" class="btn btn-primary btn-docusign">
+                        <i class="fa fa-thumbs-up"></i> {{ trans('fi.approve') }}
+                    </a>
+                    <a href="javascript:void(0)" id="btn-docusign-back" data-button-toggle="btn-docusign" class="btn btn-primary btn-docusign" style="display: none;">
+                        <i class="fa fa-backward"></i> {{ trans('fi.back_to_quote') }}
                     </a>
                     <a href="{{ route('clientCenter.public.quote.reject', [$quote->url_key]) }}" class="btn btn-primary"
                        onclick="return confirm('{{ trans('fi.confirm_reject_quote') }}');">
@@ -74,7 +91,11 @@
                         @include('notes._notes', ['object' => $quote, 'model' => 'FI\Modules\Quotes\Models\Quote'])
                     </div>
                 @endif
-
+		@if (in_array($quote->status_text, ['draft', 'sent']))
+		<div id="view-docusign">
+                        @include('client_center.quotes.docusign', ['quote' => $quote, 'model' => 'FI\Modules\Quotes\Models\Quote'])
+                </div>
+		@endif
             </div>
 
         </div>

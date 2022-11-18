@@ -28,11 +28,40 @@ class InvoiceUpdateRequest extends InvoiceStoreRequest
             }
         }
 
+	if (isset($request['group_items']))
+        {
+            foreach ($request['group_items'] as $key => $item)
+            {
+		if(!empty($request['group_items'][$key]['group_quantity']) && !empty($request['group_items'][$key]['group_price'])){
+                	$request['group_items'][$key]['group_quantity'] = NumberFormatter::unformat($item['group_quantity']);
+                	$request['group_items'][$key]['group_price']    = NumberFormatter::unformat($item['group_price']);
+		}
+            }
+        }
+
         $this->replace($request);
     }
 
     public function rules()
     {
+	if (isset($request['group_items'])){
+	return [
+            'summary'           => 'max:255',
+            'invoice_date'      => 'required',
+            'due_at'            => 'required',
+            'number'            => 'required',
+            'invoice_status_id' => 'required',
+            'exchange_rate'     => 'required|numeric',
+            'template'          => 'required',
+            //'items.*.name'      => 'required_with:items.*.price,items.*.quantity',
+            'items.*.name'      => 'required',
+            'items.*.quantity'  => 'required_with:items.*.price,items.*.name|numeric',
+            'items.*.price'     => 'required_with:items.*.name,items.*.quantity|numeric',
+		'group_items.*.group_name'      => 'required',
+            'group_items.*.group_quantity'  => 'required_with:group_items.*.price,group_items.*.name|numeric',
+            'group_items.*.group_price'     => 'required_with:group_items.*.name,group_items.*.quantity|numeric',
+        ];
+	}
         return [
             'summary'           => 'max:255',
             'invoice_date'      => 'required',

@@ -100,6 +100,7 @@
                 $.each($.parseJSON(response.responseText).errors, function (id, message) {
                     notify(message, 'danger');
                 });
+		notify($.parseJSON(response.responseText).message, 'danger');
             });
         });
 

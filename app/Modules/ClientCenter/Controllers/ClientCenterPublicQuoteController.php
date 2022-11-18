@@ -21,6 +21,7 @@ use FI\Support\PDF\PDFFactory;
 use FI\Support\Statuses\QuoteStatuses;
 use FI\Modules\Quotes\Support\QuoteToInvoice;
 use FI\Support\DateFormatter;
+use FI\Requests\DocuSignRequest;
 
 class ClientCenterPublicQuoteController extends Controller
 {
@@ -59,22 +60,25 @@ class ClientCenterPublicQuoteController extends Controller
         return $quote->html;
     }
 
-    public function approve($urlKey)
+    public function approve(DocuSignRequest $request, $urlKey)
     {
+
         $quote = Quote::where('url_key', $urlKey)->first();
 
         $quote->quote_status_id = QuoteStatuses::getStatusId('approved');
 
+	$quote->sign = $request->sign;
+
         $quote->save();
         
-        // $quoteToInvoice = new QuoteToInvoice();
+         //$quoteToInvoice = new QuoteToInvoice();
         
-        // $invoice = $quoteToInvoice->convert(
-        //     $quote,
-        //     DateFormatter::unformat(date("m/d/Y")),
-        //     DateFormatter::incrementDateByDays(DateFormatter::unformat(date("m/d/Y")), config('fi.invoicesDueAfter')),
-        //     1
-        // );
+         //$invoice = $quoteToInvoice->convert(
+           //  $quote,
+           //  DateFormatter::unformat(date("m/d/Y")),
+           //  DateFormatter::incrementDateByDays(DateFormatter::unformat(date("m/d/Y")), config('fi.invoicesDueAfter')),
+           //  1
+        //);
 
         event(new QuoteApproved($quote));
 

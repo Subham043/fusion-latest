@@ -26,6 +26,7 @@ class InventoryRequest extends FormRequest
         return [
             'name'  => trans('fi.name'),
             'price' => trans('fi.price'),
+	    'purchase-price' => 'Purchase Price',
             'total' => trans('fi.total'),
         ];
     }
@@ -36,6 +37,8 @@ class InventoryRequest extends FormRequest
 
         $request['price'] = NumberFormatter::unformat($request['price']);
 
+	$request['purchase-price'] = NumberFormatter::unformat($request['purchase-price']);
+
         $this->replace($request);
     }
 
@@ -44,6 +47,7 @@ class InventoryRequest extends FormRequest
         return [
             'name'  => 'required',
             'price' => 'required|numeric',
+	    'purchase-price' => 'numeric',
             'total' => 'required|numeric',
         ];
     }

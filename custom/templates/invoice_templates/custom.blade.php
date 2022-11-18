@@ -82,7 +82,7 @@
 
 <table>
     <tr>
-        <td style="width: 50%;" valign="top">
+        <td style="width: 33%;" valign="top">
             <h1>{{ mb_strtoupper(trans('fi.invoice')) }}</h1>
             <span class="info">{{ mb_strtoupper(trans('fi.invoice')) }} #</span>{{ $invoice->number }}<br>
             @if ($invoice->quote()->count())
@@ -104,7 +104,8 @@
             @if ($invoice->client->address) {!! $invoice->client->formatted_address !!}<br>@endif
             
         </td>
-        <td style="width: 50%; text-align: right;" valign="top">
+        <td style="width: 33%;"><h4 style="display:block;margin:auto;text-align: center;">{{ $invoice->summary }}</h4></td>
+        <td style="width: 33%; text-align: right;" valign="top">
 
             {!! $invoice->companyProfile->logo(211, 75) !!} <br /> <br />
             {{ $invoice->companyProfile->company }}<br>
@@ -135,6 +136,19 @@
             <td nowrap class="amount">{{ $item->amount->formatted_subtotal }}</td>
         </tr>
     @endforeach
+
+@if($invoice->groupitems()->count()>0)
+@foreach ($invoice->groupitems as $item)
+        <tr>
+            <td>{!! $item->name !!}</td>
+            <td>{!! $item->formatted_description !!}</td>
+            <td nowrap class="amount">{{ $item->formatted_quantity }}</td>
+	    <td nowrap class="amount">${{ number_format((float)$item->total, 2, '.', '') }}</td>
+            <td nowrap class="amount">${{ number_format((float)$item->total, 2, '.', '') }}</td>
+        </tr>
+@endforeach
+@endif
+
 
     <tr>
         <td colspan="4" class="amount">{{ mb_strtoupper(trans('fi.subtotal')) }}</td>

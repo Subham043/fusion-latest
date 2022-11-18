@@ -160,3 +160,34 @@ btn-margin-left {
 td .tools {
     display: block;
 }
+
+.fixed .content-wrapper, .fixed .right-side{
+padding-top:0;
+}
+
+.slimScrollBar {
+ width:10px !important;
+}
+
+.slimScrollDiv, .sidebar{
+height: 100vh !important;
+}
+
+.content{
+padding-top:60px;
+}
+
+.datepicker table tr td.disabled, .datepicker table tr td.disabled:hover{
+    background: #dfdfdf !important;
+    color: #444 !important;
+    cursor: default !important;
+    border-radius: 0 !important;
+}
+
+.datepicker table tr td span.disabled, .datepicker table tr td span.disabled:hover{
+    background: #dfdfdf !important;
+    color: #444 !important;
+    cursor: default !important;
+    border-radius: 0 !important;
+}
+

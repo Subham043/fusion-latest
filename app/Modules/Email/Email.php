@@ -1,6 +1,7 @@
 <?php
 
 namespace FI\Modules\Email;
+use FI\Modules\Settings\Models\Setting;
 
 
 class Email {

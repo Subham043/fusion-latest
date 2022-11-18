@@ -76,7 +76,25 @@ class Schedule extends Model {
     public function getNum()
     {
         if($this->invoices()->count()>0 || $this->quotes()->count()>0){
-            return $this->quotes_id==0 ? $this->invoices->number : $this->category_id>4 ? $this->invoices->number : $this->quotes->number;
+	    if($this->quotes_id==0){
+		if($this->invoices){
+		  return $this->invoices->number;
+		}
+		return null;
+	    }else{
+		if($this->category_id>4){
+			if($this->invoices){
+		  		return $this->invoices->number;
+			}
+			return null;
+		}else{
+			if($this->quotes){
+		  		return $this->quotes->number;
+			}
+			return null;
+		}
+	    }
+            //return $this->quotes_id==0 ? $this->invoices->number : $this->category_id>4 ? $this->invoices->number : $this->quotes->number;
         }
         return null;
     }

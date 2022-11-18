@@ -50,8 +50,8 @@
                     <ul class="dropdown-menu dropdown-menu-right">
                         <li><a href="{{ route('invoices.edit', [$invoice->id]) }}"><i
                                     class="fa fa-edit"></i> {{ trans('fi.edit') }}</a></li>
-                        <li><a href="{{ route('invoices.pdf', [$invoice->id]) }}" target="_blank"
-                               id="btn-pdf-invoice"><i class="fa fa-print"></i> {{ trans('fi.pdf') }}</a></li>
+                        <li><a href="{{ route('invoices.print', [$invoice->id]) }}" target="_blank"
+                               id="btn-print-invoice"><i class="fa fa-print"></i> {{ trans('fi.pdf') }}</a></li>
                         <li><a href="javascript:void(0)" class="email-invoice" data-invoice-id="{{ $invoice->id }}"
                                data-redirect-to="{{ request()->fullUrl() }}"><i
                                     class="fa fa-envelope"></i> {{ trans('fi.email') }}</a></li>

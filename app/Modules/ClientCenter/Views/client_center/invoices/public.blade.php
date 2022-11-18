@@ -21,6 +21,7 @@
                     driver: $(this).data('driver'),
                     urlKey: '{{ $invoice->url_key }}'
                 }).done(function (response) {
+			console.log(response);return false;
                     if (response.redirect == 1) {
                         window.location = response.url;
                     }

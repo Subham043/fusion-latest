@@ -13,6 +13,7 @@ namespace FI\Modules\Users\Controllers;
 
 use FI\Http\Controllers\Controller;
 use FI\Modules\Clients\Models\Client;
+use FI\Modules\AccessLevel\Models\AccessLevel;
 use FI\Modules\CustomFields\Models\CustomField;
 use FI\Modules\Users\Models\User;
 use FI\Modules\Users\Requests\UserStoreRequest;
@@ -36,8 +37,12 @@ class UserController extends Controller
 
     public function create($userType)
     {
+
+	$access_level = AccessLevel::all()->pluck('name', 'id');
+
         $view = view('users.' . $userType . '_form')
             ->with('editMode', false)
+	    ->with('access_level', $access_level)
             ->with('customFields', CustomField::forTable('users')->get());
 
         if ($userType == 'client')
@@ -72,9 +77,11 @@ class UserController extends Controller
     public function edit($id, $userType)
     {
         $user = User::find($id);
+	$access_level = AccessLevel::all()->pluck('name', 'id');
 
         return view('users.' . $userType . '_form')
             ->with(['editMode' => true, 'user' => $user])
+	    ->with('access_level', $access_level)
             ->with('customFields', CustomField::forTable('users')->get());
     }
 
@@ -85,8 +92,11 @@ class UserController extends Controller
         $user->fill($request->except('custom'));
 
         $user->save();
-
-        $user->custom->update($request->input('custom', []));
+	
+	if($request->input('custom')){
+		$user->custom->update($request->input('custom', []));
+	}
+        
 
         return redirect($this->getReturnUrl())
             ->with('alertInfo', trans('fi.record_successfully_updated'));

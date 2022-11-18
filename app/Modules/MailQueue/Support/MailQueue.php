@@ -13,6 +13,7 @@ namespace FI\Modules\MailQueue\Support;
 
 use FI\Support\PDF\PDFFactory;
 use Illuminate\Support\Facades\Mail;
+use FI\Modules\Email\Email;
 
 class MailQueue
 {
@@ -60,7 +61,7 @@ class MailQueue
         if ($mail->attach_pdf)
         {
             $object = $mail->mailable;
-
+//echo base_path();
             $pdfPath = base_path('storage/' . $object->pdf_filename);
 
             $pdf = PDFFactory::create();
@@ -75,7 +76,7 @@ class MailQueue
 
     private function sendMail($from, $to, $cc, $bcc, $subject, $body, $attachmentPath = null)
     {
-        try
+try
         {
             $htmlTemplate = (view()->exists('email_templates.html')) ? 'email_templates.html' : 'templates.emails.html';
 
@@ -85,10 +86,11 @@ class MailQueue
                 $to   = json_decode($to, true);
                 $cc   = json_decode($cc, true);
                 $bcc  = json_decode($bcc, true);
-
-                $message->from($from['email'], $from['name']);
+	//	echo $from;
+                //$message->from($from['email'], $from['name']);
+		$message->from('subham.s@jurysoft.com', $from['name']);
                 $message->subject($subject);
-
+		//print_r($to);exit;
                 foreach ($to as $toRecipient)
                 {
                     $message->to(trim($toRecipient));
@@ -119,21 +121,56 @@ class MailQueue
                 {
                     $message->attach($attachmentPath);
                 }
+
+		if (str_contains($subject, 'INV')) {
+			$message->attach(base_path('storage/Millennium_Contract_2022.docx'));
+			$message->attach(base_path('storage/Credit_Card_Authorization_Form_2022.docx'));
+		}
             });
 
-            if ($attachmentPath and file_exists($attachmentPath))
-            {
-                unlink($attachmentPath);
-            }
+//$from = json_decode($from, true);
+//$to   = json_decode($to, true);
+//$cc   = json_decode($cc, true);
+//$bcc  = json_decode($bcc, true);
+//print_r(implode(', ', $to));
+//print_r($body);
+//$email = new Email();
+//$email->from($from['email'], $from['name']);
+//$email->to($to);
+//$email->cc($cc);
+//$email->bcc($bcc);
+//$email->subject($subject); 
+		
+//$email->message($body);
 
-            return true;
+//if ($attachmentPath)
+//{
+//echo $attachmentPath;
+//$email->attach($attachmentPath);
+//}
+
+//if ($email->send())
+//{
+        //    if ($attachmentPath and file_exists($attachmentPath))
+      //      {
+                //unlink($attachmentPath);
+    //        }
+
+  //          return true;
+//}
+if ($attachmentPath and file_exists($attachmentPath))
+      {
+        unlink($attachmentPath);
+    }
+
+return true;
         }
         catch (\Exception $e)
         {
             $this->error = $e->getMessage();
 
             return false;
-        }
+        }        
     }
 
     public function getError()

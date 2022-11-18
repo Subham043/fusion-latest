@@ -62,6 +62,12 @@
                                 <div class="col-md-12">
 
                                     <table class="table table-striped">
+					@if($client->master_clients)
+					<tr>
+                                            <td class="col-md-2">Master Client</td>
+                                            <td class="col-md-10">{!! $client->master_clients->name !!}</td>
+                                        </tr>
+					@endif
                                         <tr>
                                             <td class="col-md-2">{{ trans('fi.client_type') }}</td>
                                             <td class="col-md-10">{!! $client->type == 1 ? trans('fi.individual') : trans('fi.corporate') !!}</td>

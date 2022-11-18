@@ -3,7 +3,7 @@
     <div class="box-body">
 
         <span class="pull-left"><strong>{{ trans('fi.subtotal') }}</strong></span><span
-            class="pull-right">{{ $quote->amount->formatted_subtotal }}</span>
+            class="pull-right" id="subtotal" data-value="{{$quote->amount->subtotal}}">{{ $quote->amount->formatted_subtotal }}</span>
 
         <div class="clearfix"></div>
 
@@ -20,7 +20,7 @@
         <div class="clearfix"></div>
 
         <span class="pull-left"><strong>{{ trans('fi.total') }}</strong></span><span
-            class="pull-right">{{ $quote->amount->formatted_total }}</span>
+            class="pull-right" id="maintotal" data-value="{{$quote->amount->total}}">{{ $quote->amount->formatted_total }}</span>
 
         <div class="clearfix"></div>
 

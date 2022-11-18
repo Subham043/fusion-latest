@@ -29,6 +29,8 @@ use Auth;
 use Session;
 use Response;
 use Illuminate\Http\Request;
+use FI\Support\Statuses\QuoteStatuses;
+use FI\Support\Statuses\InvoiceStatuses;
 
 //for FusionInvoice
 use FI\Modules\CompanyProfiles\Models\CompanyProfile;
@@ -77,14 +79,34 @@ class SchedulerController extends Controller
 
     public function calendar()
     {
+
         //only fetch back configured amount of days
 /*        $data['events'] = Schedule::with('occurrence','ScheduleResource')->whereDate('start_date', '>=', Carbon::now()->subDays(config('schedule_settings.addonSchedulerPastdays')))
             ->get();*/
 
         $data['status'] = (request('status')) ?: 'now';
 
-        $data['events'] = Schedule::withOccurrences()->with(['resources','quotes','invoices'])->whereDate('start_date', '>=',
-                            Carbon::now()->subDays(config('schedule_settings.pastdays')))->whereNotIn('category_id', array(4, 5, 10))->get();//->last();
+	if(app('request')->get('type')=='invoice'){
+		if(app('request')->get('status')){
+		$data['events'] = Schedule::withOccurrences()->with(['resources','invoices'])->whereDate('start_date', '>=',
+                            Carbon::now()->subDays(config('schedule_settings.pastdays')))->whereNotIn('invoices_id', array(0))->whereIn('category_id', array(app('request')->get('status')+4))->get();//->last();
+		}else{
+		$data['events'] = Schedule::withOccurrences()->with(['resources','invoices'])->whereDate('start_date', '>=',
+                            Carbon::now()->subDays(config('schedule_settings.pastdays')))->whereNotIn('invoices_id', array(0))->get();//->last();
+		}
+	}elseif(app('request')->get('type')=='quote'){
+		if(app('request')->get('status')){
+		$data['events'] = Schedule::withOccurrences()->with(['resources','quotes'])->whereDate('start_date', '>=',
+                            Carbon::now()->subDays(config('schedule_settings.pastdays')))->whereIn('invoices_id', array(0))->whereIn('category_id', array(app('request')->get('status')))->get();//->last();
+		}else{
+		$data['events'] = Schedule::withOccurrences()->with(['resources','quotes'])->whereDate('start_date', '>=',
+                            Carbon::now()->subDays(config('schedule_settings.pastdays')))->whereIn('invoices_id', array(0))->get();//->last();
+		}
+	}else{
+		$data['events'] = Schedule::withOccurrences()->with(['resources','quotes','invoices'])->whereDate('start_date', '>=',
+                            Carbon::now()->subDays(config('schedule_settings.pastdays')))->get();//->last();
+	}
+        
                             
                             
         // $data['categories'] = Category::pluck('name','id');
@@ -101,6 +123,7 @@ class SchedulerController extends Controller
 	//$data['companyProfiles'] = ['Default'];
 	
         return view('Scheduler::schedule.calendar', $data)
+	->with('keyedStatuses', app('request')->get('type')=='invoice' ? InvoiceStatuses::lists() : QuoteStatuses::lists())
         ->with('colors', $colors);
     }
 
@@ -577,5 +600,35 @@ class SchedulerController extends Controller
 
 		return Response::json( $response );
 	}
+
+public function loadinloadoutcalendar()
+    {
+        //only fetch back configured amount of days
+/*        $data['events'] = Schedule::with('occurrence','ScheduleResource')->whereDate('start_date', '>=', Carbon::now()->subDays(config('schedule_settings.addonSchedulerPastdays')))
+            ->get();*/
+
+        $data['status'] = (request('status')) ?: 'now';
+
+        $data['events'] = Schedule::withOccurrences()->with(['resources','quotes','invoices'])->whereDate('start_date', '>=',
+                            Carbon::now()->subDays(config('schedule_settings.pastdays')))->whereNotIn('category_id', array(4, 5, 10))->get();//->last();
+                           
+                            
+        // $data['categories'] = Category::pluck('name','id');
+        $data['categories'] = Category::select('*')->where('id', '>', 10)->orderBy('id')->get()->pluck( 'name', 'id' );
+        
+        $colors = Category::select('*')->where('id', '<', 11)->orderBy('id')->get();
+        
+        $data['catbglist'] = Category::pluck('bg_color','id');
+        
+	    $data['cattxlist'] = Category::pluck('text_color','id');
+	 //for FusionInvoice
+        $data['companyProfiles'] = CompanyProfile::getList();
+	//for InvoiceNinja
+	//$data['companyProfiles'] = ['Default'];
+	
+        return view('Scheduler::schedule.loadinloadoutcalendar', $data)
+        ->with('colors', $colors);
+    }
+
 
 }

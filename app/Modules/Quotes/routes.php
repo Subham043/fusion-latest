@@ -20,8 +20,13 @@ Route::group(['middleware' => ['web', 'auth.admin'], 'namespace' => 'FI\Modules\
         Route::post('{id}/edit', ['uses' => 'QuoteEditController@update', 'as' => 'quotes.update']);
         Route::get('{id}/delete', ['uses' => 'QuoteController@delete', 'as' => 'quotes.delete']);
         Route::get('{id}/pdf', ['uses' => 'QuoteController@pdf', 'as' => 'quotes.pdf']);
+	Route::get('{id}/print', ['uses' => 'QuoteController@print', 'as' => 'quotes.print']);
+
         Route::get('{id}/item-checklist', ['uses' => 'QuoteController@itemChecklist', 'as' => 'quotes.itemChecklist']);
 	Route::get('{id}/item-checklist-print', ['uses' => 'QuoteController@itemChecklistPrint', 'as' => 'quotes.itemChecklistPrint']);
+	Route::get('item-checklist-barcode-print', ['uses' => 'QuoteController@barcodePrinter', 'as' => 'quotes.barcodePrinter']);
+	Route::get('item-checklist-barcode-print/{id}', ['uses' => 'QuoteController@barcodePrinterSingle', 'as' => 'quotes.barcodePrinterSingle']);
+
 
         Route::get('{id}/edit/refresh', ['uses' => 'QuoteEditController@refreshEdit', 'as' => 'quoteEdit.refreshEdit']);
         Route::post('edit/refresh_to', ['uses' => 'QuoteEditController@refreshTo', 'as' => 'quoteEdit.refreshTo']);
@@ -56,4 +61,10 @@ Route::group(['middleware' => ['web', 'auth.admin'], 'namespace' => 'FI\Modules\
     {
         Route::post('delete', ['uses' => 'QuoteItemController@delete', 'as' => 'quoteItem.delete']);
     });
+
+    Route::group(['prefix' => 'quote_group_item'], function ()
+    {
+        Route::post('delete', ['uses' => 'QuoteGroupItemController@delete', 'as' => 'quoteGroupItem.delete']);
+    });
+
 });

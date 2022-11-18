@@ -7,6 +7,7 @@
 .tooltip-custom {
   position: relative;
   display: inline-block;
+	margin-left: 20px;
 }
 
 .tooltip-custom i {
@@ -49,27 +50,75 @@
 @section('content')
 
     <br>
-    <div class="container col-lg-12">
+    <div class="container col-lg-12 content">
         <div class="row">
             <div class="col-lg-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title"><i class="fa fa-fw fa-th fa-fw"></i><a
                                     href="{{ route('scheduler.index') }}">{{ trans('Scheduler::texts.schedule') }}</a> /{{ trans('Scheduler::texts.calendar') }}</h3>
+					<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;">
+				@if(app('request')->get('type')=='quote')
+				<div class="btn-group"style="margin-right:20px;">
+                			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    				Search By Quote Status <span class="caret"></span>
+                			</button>
+                			<ul class="dropdown-menu">
+                    			@foreach ($keyedStatuses as $key => $status)
+                        			<li><a href="{{url()->current()}}?type=quote&status={{ $key }}" class="bulk-change-status" data-status="{{ $key }}">{{ $status }}</a></li>
+                    			@endforeach
+                			</ul>
+            			</div>
+				@elseif(app('request')->get('type')=='invoice')
+				<div class="btn-group"style="margin-right:20px;">
+                			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    				Search By Invoice Status <span class="caret"></span>
+                			</button>
+                			<ul class="dropdown-menu">
+                    			@foreach ($keyedStatuses as $key => $status)
+                        			<li><a href="{{url()->current()}}?type=invoice&status={{ $key }}" class="bulk-change-status" data-status="{{ $key }}">{{ $status }}</a></li>
+                    			@endforeach
+                			</ul>
+            			</div>
+				@endif
+
+
+				<div class="fc-button-group">
+					<a href="{{ route('scheduler.fullcalendar') }}" style="padding:5px;" class="fc-month-button fc-button fc-state-default fc-corner-left {{empty(app('request')->get('type')) ? 'fc-state-active' : ''}} ">All</a>
+					<a href="{{ route('scheduler.fullcalendar') }}?type=quote" style="padding:5px;" class="fc-agendaWeek-button fc-button fc-state-default {{(app('request')->get('type')=='quote') ? 'fc-state-active' : ''}}">Quotes</a>
+					<a href="{{ route('scheduler.fullcalendar') }}?type=invoice" style="padding:5px;" class="fc-listDay-button fc-button fc-state-default fc-corner-right {{(app('request')->get('type')=='invoice') ? 'fc-state-active' : ''}}">Invoices</a>
+				</div>
                                     <div class="tooltip-custom"><i class="fa fa-info-circle" aria-hidden="true"></i>
                                       <span class="tooltiptext">
                                           <table style="width:100%;">
                                               <thead>
                                                   @foreach($colors as $colors)
+						@if(app('request')->get('type')=='quote')
+							@if(strpos($colors->name,'Quotes')!==false)
+								<tr style="width:100%">
+                                                      			<td>{!! $colors->name !!} :</td>
+                                                      			<td><span style="background:{!! $colors->bg_color !!};width:15px;height:15px;display:block;"></span></td>
+                                                  		</tr>
+							@endif
+						@elseif(app('request')->get('type')=='invoice')
+							@if(strpos($colors->name,'Invoice')!==false)
+								<tr style="width:100%">
+                                                      			<td>{!! $colors->name !!} :</td>
+                                                      			<td><span style="background:{!! $colors->bg_color !!};width:15px;height:15px;display:block;"></span></td>
+                                                  		</tr>
+							@endif
+						@else
                                                   <tr style="width:100%">
                                                       <td>{!! $colors->name !!} :</td>
                                                       <td><span style="background:{!! $colors->bg_color !!};width:15px;height:15px;display:block;"></span></td>
                                                   </tr>
+						@endif
                                                   @endforeach
                                               </thead>
                                           </table>
                                       </span>
                                     </div>
+				</div>
                     </div>
                     <div class="panel-body">
                         <div id="calendar">

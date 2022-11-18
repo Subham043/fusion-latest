@@ -24,6 +24,9 @@ use FI\Support\Statuses\InvoiceStatuses;
 use FI\Traits\Sortable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use File;
+
 
 class Invoice extends Model
 {
@@ -58,7 +61,16 @@ class Invoice extends Model
         static::created(function ($invoice)
         {
             event(new InvoiceCreated($invoice));
-        });
+		
+	    //$url = preg_replace("(^https?://)", "", route('invoices.itemChecklistPrint',$invoice->id));
+		$url = "CHK-".$invoice->id;
+
+	    $barcode = new \FI\Modules\Inventory\Barcode\Barcode();
+	    $bobj = $barcode->getBarcodeObj('C128', $url, 0, -30, 'black', array(0, 0, 0, 0));
+  	    Storage::put('public/barcode/item-checklist-'.$invoice->id.'-barcode.png', $bobj->getPngData());
+	    File::move(storage_path('app/public/barcode/item-checklist-'.$invoice->id.'-barcode.png'), public_path('assets/barcode/item-checklist-'.$invoice->id.'-barcode.png'));
+        
+	});
 
         static::deleted(function ($invoice)
         {
@@ -131,6 +143,12 @@ class Invoice extends Model
     public function items()
     {
         return $this->hasMany('FI\Modules\Invoices\Models\InvoiceItem')
+            ->orderBy('display_order');
+    }
+
+	public function groupitems()
+    {
+        return $this->hasMany('FI\Modules\Invoices\Models\InvoiceGroupItem')
             ->orderBy('display_order');
     }
 
@@ -360,14 +378,24 @@ class Invoice extends Model
         return $query->where('invoice_status_id', '=', InvoiceStatuses::getStatusId('sent'));
     }
 
-    public function scopePaid($query)
+    public function scopePaid_Partial($query)
     {
-        return $query->where('invoice_status_id', '=', InvoiceStatuses::getStatusId('paid'));
+        return $query->where('invoice_status_id', '=', InvoiceStatuses::getStatusId('paid_partial'));
+    }
+
+    public function scopePaid_Full($query)
+    {
+        return $query->where('invoice_status_id', '=', InvoiceStatuses::getStatusId('paid_full'));
     }
 
     public function scopeCanceled($query)
     {
         return $query->where('invoice_status_id', '=', InvoiceStatuses::getStatusId('canceled'));
+    }
+
+    public function scopeOverdue($query)
+    {
+        return $query->where('invoice_status_id', '=', InvoiceStatuses::getStatusId('overdue'));
     }
 
     public function scopeCompanyProfileId($query, $companyProfileId)
@@ -410,8 +438,11 @@ class Invoice extends Model
             case 'viewed':
                 $query->viewed();
                 break;
-            case 'paid':
-                $query->paid();
+	    case 'paid_partial':
+                $query->paid_partial();
+                break;
+            case 'paid_full':
+                $query->paid_full();
                 break;
             case 'canceled':
                 $query->canceled();
@@ -424,13 +455,13 @@ class Invoice extends Model
         return $query;
     }
 
-    public function scopeOverdue($query)
-    {
+    //public function scopeOverdue($query)
+    //{
         // Only invoices in Sent status qualify to be overdue
-        return $query
-            ->where('invoice_status_id', '=', InvoiceStatuses::getStatusId('sent'))
-            ->where('due_at', '<', date('Y-m-d'));
-    }
+        //return $query
+           // ->where('invoice_status_id', '=', InvoiceStatuses::getStatusId('sent'))
+            //->where('due_at', '<', date('Y-m-d'));
+    //}
 
     public function scopeYearToDate($query)
     {
@@ -455,7 +486,7 @@ class Invoice extends Model
         if ($keywords)
         {
             $keywords = strtolower($keywords);
-
+		$num = substr($keywords, (strpos($keywords, '-') ?: -1) + 1);
             $query->where(DB::raw('lower(number)'), 'like', '%' . $keywords . '%');
             if(preg_match("/^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4}$/", $keywords) === 1) {
                 $query->orWhere('invoices.invoice_date', 'like', '%' . DateFormatter::unformat($keywords) . '%');
@@ -463,7 +494,7 @@ class Invoice extends Model
                 $query->orWhere('invoices.event_date', 'like', '%' . DateFormatter::unformat($keywords) . '%');
             }
                 
-                $query->orWhere('summary', 'like', '%' . $keywords . '%');
+                $query->orWhere('summary', 'like', '%' . $keywords . '%')->orWhere('invoices.id', 'LIKE', "%$num%");
                 $query->orWhereIn('client_id', function ($query) use ($keywords)
                 {
                     $query->select('id')->from('clients')->where(DB::raw("CONCAT_WS('^',LOWER(name),LOWER(unique_name))"), 'like', '%' . $keywords . '%');

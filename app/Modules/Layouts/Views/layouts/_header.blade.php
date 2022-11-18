@@ -22,11 +22,13 @@
                     </a>
                 </li>
 
+		@if(in_array(11,json_decode(Auth::user()->access_levels->access)))
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="{{ trans('fi.system') }}">
                         <i class="fa fa-cog"></i>
                     </a>
                     <ul class="dropdown-menu">
+			<li><a href="{{ route('access_level.index') }}">Access Level</a></li>
                         <li><a href="{{ route('addons.index') }}">{{ trans('fi.addons') }}</a></li>
                         <li><a href="{{ route('currencies.index') }}">{{ trans('fi.currencies') }}</a></li>
                         <li><a href="{{ route('customFields.index') }}">{{ trans('fi.custom_fields') }}</a></li>
@@ -34,6 +36,7 @@
                         <li><a href="{{ route('export.index') }}">{{ trans('fi.export_data') }}</a></li>
                         <li><a href="{{ route('groups.index') }}">{{ trans('fi.groups') }}</a></li>
                         <li><a href="{{ route('import.index') }}">{{ trans('fi.import_data') }}</a></li>
+			<li><a href="{{ route('bulkupload.index') }}">Bulk Upload</a></li>
                         <li><a href="{{ route('itemLookups.index') }}">{{ trans('fi.item_lookups') }}</a></li>
                         <li><a href="{{ route('mailLog.index') }}">{{ trans('fi.mail_log') }}</a></li>
                         <li><a href="{{ route('paymentMethods.index') }}">{{ trans('fi.payment_methods') }}</a></li>
@@ -47,7 +50,7 @@
                         @endforeach
                     </ul>
                 </li>
-
+		@endif
                 <li>
                     <a href="{{ route('session.logout') }}" title="{{ trans('fi.sign_out') }}"><i class="fa fa-power-off"></i></a>
                 </li>

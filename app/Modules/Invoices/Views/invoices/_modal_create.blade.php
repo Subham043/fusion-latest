@@ -3,6 +3,12 @@
 @include('clients._js_lookup')
 @include('invoices._js_create')
 
+<!-- CSS for searching -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<!-- JS for searching -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
 <div class="modal fade" id="create-invoice">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -19,11 +25,22 @@
                     <input type="hidden" name="user_id" value="{{ auth()->user()->id }}" id="user_id">
 
                     <div class="form-group">
-                        <label class="col-sm-3 control-label">{{ trans('fi.client') }}</label>
+                        <label class="col-sm-3 control-label">Master {{ trans('fi.client') }}</label>
 
                         <div class="col-sm-9">
+			    {!! Form::select('MasterClient', $MasterClient, null, ['placeholder' => '--Select Master client--','id' => 'create_master_client_name', 'class' => 'js-example-basic-single form-control','style'=>'width:100%;']) !!}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">{{ trans('fi.client') }}</label>
+
+                        <!--<div class="col-sm-9">
                             {!! Form::text('client_name', null, ['id' => 'create_client_name', 'class' =>
                             'form-control client-lookup', 'autocomplete' => 'off']) !!}
+                        </div>-->
+			<div class="col-sm-9">
+			    {!! Form::select('client_name', $Client, null, ['placeholder' => '--Select client--','id' => 'create_client_name_new', 'class' => 'js-example-basic-single form-control','style'=>'width:100%;']) !!}
                         </div>
                     </div>
                     

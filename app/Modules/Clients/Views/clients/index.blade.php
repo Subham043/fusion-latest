@@ -61,7 +61,7 @@
                             <thead>
                             <tr>
                                 <th><div class="btn-group"><input type="checkbox" id="bulk-select-all"></div></th>
-                                <th>{!! Sortable::link('unique_name', trans('fi.client_name')) !!}</th>
+                                <th>{!! Sortable::link('name', trans('fi.name')) !!}</th>
                                 <th>{{ trans('fi.type') }}</th>
                                 <th>{!! Sortable::link('email', trans('fi.email_address')) !!}</th>
                                 <th>{!! Sortable::link('phone', trans('fi.phone_number')) !!}</th>
@@ -75,7 +75,7 @@
                             @foreach ($clients as $client)
                                 <tr>
                                     <td><input type="checkbox" class="bulk-record" data-id="{{ $client->id }}"></td>
-                                    <td><a href="{{ route('clients.show', [$client->id]) }}">{{ $client->unique_name }}</a></td>
+                                    <td><a href="{{ route('clients.show', [$client->id]) }}">{{ $client->name }}</a></td>
                                     <td>{{ $client->type == 1 ? 'Individual' : 'Corporate' }}</td>
                                     <td>{{ $client->email }}</td>
                                     <td>{{ (($client->phone ? $client->phone : ($client->mobile ? $client->mobile : ''))) }}</td>
@@ -91,7 +91,7 @@
                                                 <li><a href="{{ route('clients.edit', [$client->id]) }}" id="edit-client-{{ $client->id }}"><i class="fa fa-edit"></i> {{ trans('fi.edit') }}</a></li>
                                                 <li><a href="javascript:void(0)" class="create-quote" data-unique-name="{{ $client->unique_name }}"><i class="fa fa-file-text-o"></i> {{ trans('fi.create_quote') }}</a></li>
                                                 <li><a href="javascript:void(0)" class="create-invoice" data-unique-name="{{ $client->unique_name }}"><i class="fa fa-file-text"></i> {{ trans('fi.create_invoice') }}</a></li>
-                                               <!-- <li><a href="{{ route('clients.delete', [$client->id]) }}" id="delete-client-{{ $client->id }}" onclick="return confirm('{{ trans('fi.delete_client_warning') }}');"><i class="fa fa-trash-o"></i> {{ trans('fi.delete') }}</a></li>-->
+                                                <li><a href="{{ route('clients.delete', [$client->id]) }}" id="delete-client-{{ $client->id }}" onclick="return confirm('{{ trans('fi.delete_client_warning') }}');"><i class="fa fa-trash-o"></i> {{ trans('fi.delete') }}</a></li>
                                             </ul>
                                         </div>
                                     </td>

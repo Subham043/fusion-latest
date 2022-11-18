@@ -61,6 +61,12 @@
                             <span class="help-block">{{ trans('fi.field_meta_description') }}</span>
                         </div>
 
+			<div class="form-group">
+                            <label>Order By: </label>
+                            {!! Form::text('order_by', null, ['id' => 'field_meta', 'class' => 'form-control']) !!}
+                        </div>
+
+
                     </div>
 
                 </div>

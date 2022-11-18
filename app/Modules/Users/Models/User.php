@@ -79,6 +79,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return $this->hasMany('FI\Modules\Quotes\Models\Quote');
     }
 
+    public function access_levels()
+    {
+        return $this->belongsTo('FI\Modules\AccessLevel\Models\AccessLevel', 'access_level');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Accessors

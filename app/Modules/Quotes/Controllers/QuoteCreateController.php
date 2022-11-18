@@ -13,6 +13,7 @@ namespace FI\Modules\Quotes\Controllers;
 
 use FI\Http\Controllers\Controller;
 use FI\Modules\Clients\Models\Client;
+use FI\Modules\MasterClients\Models\MasterClient;
 use FI\Modules\CompanyProfiles\Models\CompanyProfile;
 use FI\Modules\Groups\Models\Group;
 use FI\Modules\Quotes\Models\Quote;
@@ -42,8 +43,17 @@ class QuoteCreateController extends Controller
 {
     public function create()
     {
+	$masterClient = MasterClient::get();
+	if(count($masterClient)>0){
+		$client = Client::where('master_client_id', $masterClient[0]->id)->get()->pluck('name', 'id');
+	}else{
+		$client = [];
+	}
+
         return view('quotes._modal_create')
             ->with('companyProfiles', CompanyProfile::getList())
+	    ->with('MasterClient', MasterClient::pluck('name', 'id')->all())
+	    ->with('Client', $client)
             ->with('groups', Group::getList());
     }
 

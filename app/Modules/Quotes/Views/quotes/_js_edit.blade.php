@@ -1,5 +1,10 @@
 <script type="text/javascript">
 
+	function deleteUnsavedGroupItem(){
+		if (!confirm('{!! trans('fi.delete_record_warning') !!}')) return false;
+		this.event.target.parentNode.parentNode.parentNode.remove();
+	}
+
     $(function () {
 
         $("#quote_date").datepicker({format: '{{ config('fi.datepickerFormat') }}', autoclose: true, startDate: new Date()});
@@ -57,9 +62,24 @@
             });
         });
 
+	$('.btn-delete-quote-group-item').click(function () {
+            if (!confirm('{!! trans('fi.delete_record_warning') !!}')) return false;
+            var id = $(this).data('item-id');
+            $.post('{{ route('quoteGroupItem.delete') }}', {
+                id: id
+            }).done(function () {
+                $('#tr-group-item-' + id).remove();
+                $('#div-totals').load('{{ route('quoteEdit.refreshTotals') }}', {
+                    id: {{ $quote->id }}
+                });
+            });
+        });
+
         $('.btn-save-quote').click(function () {
             var items = [];
             var display_order = 1;
+	    var group_items = [];
+            var group_display_order = 1;
             var custom_fields = {};
             var apply_exchange_rate = $(this).data('apply-exchange-rate');
 
@@ -85,6 +105,28 @@
                 items.push(row);
             });
 
+	    $('table tr.item_group').each(function () {
+                var row = {};
+                $(this).find('input,select,textarea').each(function () {
+                    if ($(this).attr('name') !== undefined) {
+                        if ($(this).is(':checkbox')) {
+                            if ($(this).is(':checked')) {
+                                row[$(this).attr('name')] = 1;
+                            }
+                            else {
+                                row[$(this).attr('name')] = 0;
+                            }
+                        }
+                        else {
+                            row[$(this).attr('name')] = $(this).val();
+                        }
+                    }
+                });
+                row['display_order'] = group_display_order;
+                display_order++;
+                group_items.push(row);
+            });
+
             $('.custom-form-field').each(function () {
                 var fieldName = $(this).data('quotes-field-name');
                 if (fieldName !== undefined) {
@@ -99,6 +141,7 @@
                 expires_at: $('#expires_at').val(),
                 quote_status_id: $('#quote_status_id').val(),
                 items: items,
+		group_items: group_items,
                 terms: $('#terms').val(),
                 footer: $('#footer').val(),
                 currency_code: $('#currency_code').val(),

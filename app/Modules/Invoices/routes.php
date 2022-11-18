@@ -14,6 +14,10 @@ Route::group(['middleware' => ['web', 'auth.admin'], 'namespace' => 'FI\Modules\
     Route::group(['prefix' => 'invoices'], function ()
     {
         Route::get('/', ['uses' => 'InvoiceController@index', 'as' => 'invoices.index']);
+	Route::get('/payment-due/individual', ['uses' => 'InvoiceController@displayReminder', 'as' => 'invoices.displayReminder']);
+	Route::get('/payment-due/corporate', ['uses' => 'InvoiceController@displayReminderCorporate', 'as' => 'invoices.displayReminderCorporate']);
+	Route::get('/payment-due/send-all', ['uses' => 'InvoiceController@sendAllReminder', 'as' => 'invoices.sendAllReminder']);
+	Route::get('/payment-due/send-multiple', ['uses' => 'InvoiceController@sendMultipleReminder', 'as' => 'invoices.sendMultipleReminder']);
         Route::get('create', ['uses' => 'InvoiceCreateController@create', 'as' => 'invoices.create']);
         Route::post('create', ['uses' => 'InvoiceCreateController@store', 'as' => 'invoices.store']);
         Route::get('{id}/edit', ['uses' => 'InvoiceEditController@edit', 'as' => 'invoices.edit']);
@@ -23,6 +27,8 @@ Route::group(['middleware' => ['web', 'auth.admin'], 'namespace' => 'FI\Modules\
         Route::get('{id}/item-checklist', ['uses' => 'InvoiceController@itemChecklist', 'as' => 'invoices.itemChecklist']);
         Route::get('{id}/print', ['uses' => 'InvoiceController@print', 'as' => 'invoices.print']);
 	Route::get('{id}/item-checklist-print', ['uses' => 'InvoiceController@itemChecklistPrint', 'as' => 'invoices.itemChecklistPrint']);
+	Route::get('item-checklist-barcode-print', ['uses' => 'InvoiceController@barcodePrinter', 'as' => 'invoices.barcodePrinter']);
+	Route::get('item-checklist-barcode-print/{id}', ['uses' => 'InvoiceController@barcodePrinterSingle', 'as' => 'invoices.barcodePrinterSingle']);
 
         Route::get('{id}/edit/refresh', ['uses' => 'InvoiceEditController@refreshEdit', 'as' => 'invoiceEdit.refreshEdit']);
         Route::post('edit/refresh_to', ['uses' => 'InvoiceEditController@refreshTo', 'as' => 'invoiceEdit.refreshTo']);
@@ -51,4 +57,10 @@ Route::group(['middleware' => ['web', 'auth.admin'], 'namespace' => 'FI\Modules\
     {
         Route::post('delete', ['uses' => 'InvoiceItemController@delete', 'as' => 'invoiceItem.delete']);
     });
+
+	Route::group(['prefix' => 'invoice_group_item'], function ()
+    {
+        Route::post('delete', ['uses' => 'InvoiceGroupItemController@delete', 'as' => 'invoiceGroupItem.delete']);
+    });
+
 });

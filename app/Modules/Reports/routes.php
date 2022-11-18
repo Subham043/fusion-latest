@@ -50,4 +50,31 @@ Route::group(['prefix' => 'report', 'middleware' => ['web', 'auth.admin'], 'name
     Route::post('expense_list/validate', ['uses' => 'ExpenseListReportController@validateOptions', 'as' => 'reports.expenseList.validate']);
     Route::get('expense_list/html', ['uses' => 'ExpenseListReportController@html', 'as' => 'reports.expenseList.html']);
     Route::get('expense_list/pdf', ['uses' => 'ExpenseListReportController@pdf', 'as' => 'reports.expenseList.pdf']);
+
+    Route::get('sales_report', ['uses' => 'SalesReportController@index', 'as' => 'reports.sales']);
+    Route::post('sales_report/validate', ['uses' => 'SalesReportController@validateOptions', 'as' => 'reports.sales.validate']);
+    Route::get('sales_report/html', ['uses' => 'SalesReportController@html', 'as' => 'reports.sales.html']);
+    Route::get('sales_report/pdf', ['uses' => 'SalesReportController@pdf', 'as' => 'reports.sales.pdf']);
+    Route::get('sales_report/csv', ['uses' => 'SalesReportController@csv', 'as' => 'reports.sales.csv']);
+
+    Route::get('quotes_report', ['uses' => 'QuotesReportController@index', 'as' => 'reports.quotes']);
+    Route::post('quotes_report/validate', ['uses' => 'QuotesReportController@validateOptions', 'as' => 'reports.quotes.validate']);
+    Route::get('quotes_report/html', ['uses' => 'QuotesReportController@html', 'as' => 'reports.quotes.html']);
+    Route::get('quotes_report/pdf', ['uses' => 'QuotesReportController@pdf', 'as' => 'reports.quotes.pdf']);
+    Route::get('quotes_report/csv', ['uses' => 'QuotesReportController@csv', 'as' => 'reports.quotes.csv']);
+
+    Route::get('paid_report', ['uses' => 'PaidReportController@index', 'as' => 'reports.paid']);
+    Route::post('paid_report/validate', ['uses' => 'PaidReportController@validateOptions', 'as' => 'reports.paid.validate']);
+    Route::get('paid_report/html', ['uses' => 'PaidReportController@html', 'as' => 'reports.paid.html']);
+    Route::get('paid_report/pdf', ['uses' => 'PaidReportController@pdf', 'as' => 'reports.paid.pdf']);
+    Route::get('paid_report/csv', ['uses' => 'PaidReportController@csv', 'as' => 'reports.paid.csv']);
+
+    Route::get('aging_report', ['uses' => 'AgingReportController@index', 'as' => 'reports.aging']);
+    Route::post('aging_report/validate', ['uses' => 'AgingReportController@validateOptions', 'as' => 'reports.aging.validate']);
+    Route::get('aging_report/html', ['uses' => 'AgingReportController@html', 'as' => 'reports.aging.html']);
+    Route::get('aging_report/pdf', ['uses' => 'AgingReportController@pdf', 'as' => 'reports.aging.pdf']);
+    Route::get('aging_report/csv', ['uses' => 'AgingReportController@csv', 'as' => 'reports.aging.csv']);
+
+
+
 });

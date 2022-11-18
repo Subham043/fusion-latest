@@ -16,6 +16,9 @@ use FI\Support\NumberFormatter;
 use FI\Traits\Sortable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use File;
+
 
 class Inventory extends Model
 {
@@ -30,7 +33,22 @@ class Inventory extends Model
     
     protected $guarded = ['id'];
 
-    protected $sortable = ['name', 'description', 'price'];
+    protected $sortable = ['name', 'category', 'price', 'sub-category', 'color', 'style', 'location', 'total'];
+
+	public static function boot()
+    {
+        parent::boot();
+	self::created(function($model){
+            // ... code here
+		//$url = preg_replace("(^https?://)", "", route('inventory.edit',$model->id));
+		$url = "PRD-".$model->id;
+
+		$barcode = new \FI\Modules\Inventory\Barcode\Barcode();
+		$bobj = $barcode->getBarcodeObj('C128', $url, 0, -30, 'black', array(0, 0, 0, 0));
+  		Storage::put('public/barcode/inventory'.$model->id.'-barcode.png', $bobj->getPngData());
+		File::move(storage_path('app/public/barcode/inventory'.$model->id.'-barcode.png'), public_path('assets/barcode/inventory'.$model->id.'-barcode.png'));
+        });
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -58,6 +76,12 @@ class Inventory extends Model
         return $this->hasMany('FI\Modules\Invoices\Models\InvoiceItem');
     }
 
+    public function inventoryImage()
+    {
+        return $this->hasMany('FI\Modules\Inventory\Models\InventoryImage', 'item_lookup_id');
+    }
+
+
     /*
     |--------------------------------------------------------------------------
     | Accessors
@@ -74,6 +98,7 @@ class Inventory extends Model
         return NumberFormatter::format($this->attributes['price']);
     }
 
+
     /*
     |--------------------------------------------------------------------------
     | Scopes
@@ -84,17 +109,23 @@ class Inventory extends Model
     {
         if ($keywords)
         {
-            $keywords = explode(' ', $keywords);
 
-            foreach ($keywords as $keyword)
-            {
-                if ($keyword)
-                {
-                    $keyword = strtolower($keyword);
+		$keyword = strtolower($keywords);
+		$num = substr($keyword, (strpos($keyword, '-') ?: -1) + 1);
+		$query->where(DB::raw("CONCAT_WS('^',LOWER(name),LOWER(category),LOWER(color),LOWER(style),price)"), 'LIKE', "%$keyword%")
+			->orWhere('sub-category', 'LIKE', "%$keyword%")->orWhere('id', 'LIKE', "%$num%");
+           // $keywords = explode(' ', $keywords);
 
-                    $query->where(DB::raw("CONCAT_WS('^',LOWER(name),LOWER(description),price)"), 'LIKE', "%$keyword%");
-                }
-            }
+            //foreach ($keywords as $keyword)
+            //{
+              //  if ($keyword)
+               // {
+                 //   $keyword = strtolower($keyword);
+
+                   // $query->where(DB::raw("CONCAT_WS('^',LOWER(name),LOWER(category),LOWER(color),LOWER(style),price)"), 'LIKE', "%$keyword%")
+			//->orWhere('sub-category', 'LIKE', "%$keyword%");
+                //}
+            //}
         }
 
         return $query;

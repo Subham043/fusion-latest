@@ -68,6 +68,7 @@ class PayPal extends MerchantDriverPayable
         {
             $payment->create($apiContext);
 
+	    print_r($payment->getApprovalLink());exit;
             return $payment->getApprovalLink();
         }
         catch (PayPalConnectionException $ex)

@@ -55,6 +55,8 @@ class QuoteMailController extends Controller
     {
         $quote = Quote::find($request->input('quote_id'));
 
+	//return response()->json(['errors' => $request->input()], 400);
+
         event(new QuoteEmailing($quote));
 
         $mail = $this->mailQueue->create($quote, $request->except('quote_id'));

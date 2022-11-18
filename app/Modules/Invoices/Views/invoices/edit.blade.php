@@ -5,6 +5,7 @@
     @include('layouts._datepicker')
     @include('layouts._typeahead')
     @include('inventory._js_inventory')
+    @include('inventorygrouplist._js_inventory_group_ajax')
     <style>
     .info-td{
         display:flex;

@@ -12,6 +12,7 @@
 Route::group( [ 'prefix' => 'scheduler', 'middleware' => ['web', 'auth.admin'], 'namespace' => 'Addons\Scheduler\Controllers' ], function () {
 	Route::get( '/', [ 'uses' => 'SchedulerController@index', 'as' => 'scheduler.index' ] );
 	Route::get( '/fullcalendar', [ 'uses' => 'SchedulerController@calendar', 'as' => 'scheduler.fullcalendar' ] );
+	Route::get( '/load_in_load_out_calendar', [ 'uses' => 'SchedulerController@loadinloadoutcalendar', 'as' => 'scheduler.loadinloadoutcalendar' ] );
 	Route::get( '/create_event', [ 'uses' => 'SchedulerController@editEvent', 'as' => 'scheduler.create' ] );
 	//ajax post
 	Route::any( '/update_event/{id?}', [

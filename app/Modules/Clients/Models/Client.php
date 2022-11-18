@@ -43,11 +43,13 @@ class Client extends Model
         static::created(function ($client)
         {
             event(new ClientCreated($client));
+	     $client->url_key = str_random(32);
         });
 
         static::saving(function ($client)
         {
             event(new ClientSaving($client));
+	    $client->url_key = str_random(32);
         });
 
         static::deleted(function ($client)
@@ -84,6 +86,11 @@ class Client extends Model
     | Relationships
     |--------------------------------------------------------------------------
     */
+
+    public function master_clients()
+    {
+        return $this->belongsTo('FI\Modules\MasterClients\Models\MasterClient', 'master_client_id');
+    }
 
     public function attachments()
     {

@@ -13,6 +13,7 @@ namespace FI\Modules\Clients\Controllers;
 
 use FI\Http\Controllers\Controller;
 use FI\Modules\Clients\Models\Client;
+use FI\Modules\MasterClients\Models\MasterClient;
 use FI\Modules\Clients\Requests\ClientStoreRequest;
 use FI\Modules\Clients\Requests\ClientUpdateRequest;
 use FI\Modules\CustomFields\Models\CustomField;
@@ -48,11 +49,14 @@ class ClientController extends Controller
     {
         return view('clients.form')
             ->with('editMode', false)
+	    ->with('MasterClients', MasterClient::pluck( 'name', 'id' ))
             ->with('customFields', CustomField::forTable('clients')->get());
     }
 
     public function store(ClientStoreRequest $request)
     {
+	// print_r($request); exit;
+	
         $client = Client::create($request->except('custom'));
 
         $client->custom->update($request->get('custom', []));
@@ -102,6 +106,7 @@ class ClientController extends Controller
         return view('clients.form')
             ->with('editMode', true)
             ->with('client', $client)
+	    ->with('MasterClients', MasterClient::pluck( 'name', 'id' ))
             ->with('customFields', CustomField::forTable('clients')->get())
             ->with('returnUrl', $this->getReturnUrl());
     }
@@ -135,7 +140,9 @@ class ClientController extends Controller
     {
         $clients = Client::select('unique_name')
             ->where('active', 1)
-            ->where('unique_name', 'like', '%' . request('query') . '%')
+	    ->where('master_client_id', request('master_client'))
+            ->where('name', 'like', '%' . request('query') . '%')
+	    //->orWhere('name', 'like', '%' . request('query') . '%')
             ->orderBy('unique_name')
             ->get();
 
@@ -153,12 +160,26 @@ class ClientController extends Controller
     {
         $clients = Client::select('type')
             ->where('active', 1)
-            ->where('unique_name', request('query') )
+	    ->where('master_client_id', request('master_client'))
+            //->where('unique_name', request('query') )
+	    ->where('name', request('query') )
             // ->where('unique_name', 'like', '%' . request('query') . '%')
             ->first();
-
         return json_encode($clients);
     }
+
+    public function ajaxUserLookupMaster()
+    {
+        $clients = Client::select('id', 'name')
+            ->where('active', 1)
+	    ->where('master_client_id', request('master_client'))
+            //->where('unique_name', request('query') )
+	    //->where('name', request('query') )
+            // ->where('unique_name', 'like', '%' . request('query') . '%')
+            ->get();
+        return json_encode($clients);
+    }
+
 
     public function ajaxModalEdit()
     {

@@ -20,6 +20,10 @@ use FI\Support\Statuses\InvoiceStatuses;
 use FI\Traits\ReturnUrl;
 use Addons\Scheduler\Models\Schedule;
 use FI\Modules\CustomFields\Models\CustomField;
+use Illuminate\Http\Request;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use Auth;
 
 class InvoiceController extends Controller
 {
@@ -185,4 +189,148 @@ class InvoiceController extends Controller
 			->with('customFields', CustomField::forTable('invoices')->get())
 			->with('logo', $invoice->companyProfile->logo())->render();
 	}
+
+	public function barcodePrinter(Request $req)
+    {
+        $this->setReturnUrl();
+
+        $status = request('status', 'all_statuses');
+
+        $invoices = Invoice::select('invoices.*')
+            ->join('clients', 'clients.id', '=', 'invoices.client_id')
+            ->join('invoice_amounts', 'invoice_amounts.invoice_id', '=', 'invoices.id')
+            ->join('invoices_custom', 'invoices_custom.invoice_id', '=', 'invoices.id')
+            ->with(['client', 'activities', 'amount.invoice.currency'])
+	    ->orderBy('id','DESC')
+            ->keywords(request('search'));
+	    if($req->has('item')){
+			if($req->input('item')=="all"){
+
+				$invoices= $invoices->paginate(10000);
+			}else{
+			  $invoices= $invoices->paginate($req->input('item'));
+			}
+		}
+		else{
+            $invoices= $invoices->paginate(config('fi.resultsPerPage'));
+		}
+
+            
+
+        return view('invoices.barcodePrinter')
+	    ->with('displaySearch', true)
+            ->with('invoices', $invoices);
+    }
+
+	public function barcodePrinterSingle($id)
+	{
+		$invoice = Invoice::findOrFail($id);
+		return view('invoices.barcodePrinterSingle')
+			->with('invoices', $invoice);
+	}
+
+
+    public function displayReminder()
+    {
+        $this->setReturnUrl();
+
+        $status = request('status', 'all_statuses');
+
+        $invoices = Invoice::select('invoices.*')
+            ->join('clients', 'clients.id', '=', 'invoices.client_id')
+            ->join('invoice_amounts', 'invoice_amounts.invoice_id', '=', 'invoices.id')
+            ->join('invoices_custom', 'invoices_custom.invoice_id', '=', 'invoices.id')
+            ->with(['client', 'activities', 'amount.invoice.currency'])
+	    ->whereDate('invoices.due_at', '<', Carbon::now())
+	    ->where('clients.type',1)
+	    ->whereIn('invoices.invoice_status_id', array(InvoiceStatuses::getStatusId('paid_partial'), InvoiceStatuses::getStatusId('overdue')))
+            ->sortable(['invoice_date' => 'desc', 'LENGTH(number)' => 'desc', 'number' => 'desc'])
+            ->paginate(config('fi.resultsPerPage'));
+
+        return view('invoices.displayReminder')
+            ->with('invoices', $invoices)
+            ->with('displaySearch', true);
+    }
+
+	public function displayReminderCorporate()
+    {
+        $this->setReturnUrl();
+
+        $status = request('status', 'all_statuses');
+
+        $invoices = Invoice::select('invoices.*')
+            ->join('clients', 'clients.id', '=', 'invoices.client_id')
+            ->join('invoice_amounts', 'invoice_amounts.invoice_id', '=', 'invoices.id')
+            ->join('invoices_custom', 'invoices_custom.invoice_id', '=', 'invoices.id')
+            ->with(['client', 'activities', 'amount.invoice.currency'])
+	    ->whereDate('invoices.due_at', '<', Carbon::now())
+	    ->where('clients.type',2)
+	    ->whereIn('invoices.invoice_status_id', array(InvoiceStatuses::getStatusId('paid_partial'), InvoiceStatuses::getStatusId('overdue')))
+            ->sortable(['invoice_date' => 'desc', 'LENGTH(number)' => 'desc', 'number' => 'desc'])
+            ->paginate(config('fi.resultsPerPage'));
+
+
+        return view('invoices.displayReminder')
+            ->with('invoices', $invoices)
+            ->with('displaySearch', true);
+    }
+
+    public function sendAllReminder(){
+
+	$invoices = Invoice::select('invoices.*')
+            ->join('clients', 'clients.id', '=', 'invoices.client_id')
+            ->join('invoice_amounts', 'invoice_amounts.invoice_id', '=', 'invoices.id')
+            ->join('invoices_custom', 'invoices_custom.invoice_id', '=', 'invoices.id')
+            ->with(['client', 'activities', 'amount.invoice.currency'])
+	    ->whereDate('invoices.due_at', '<', Carbon::now())
+	    ->whereIn('invoices.invoice_status_id', array(InvoiceStatuses::getStatusId('paid_partial'), InvoiceStatuses::getStatusId('overdue')))
+            ->sortable(['invoice_date' => 'desc', 'LENGTH(number)' => 'desc', 'number' => 'desc'])
+            ->get();
+
+	foreach($invoices as $invoices){
+		$msg = "<p>Hello ".$invoices->client->name."<br/> We would like to follow up on payment for the attached invoice.<br/> We are looking forward to being a part of your event!<br/> Hope you have a wonderful and blessed day!<br/> Sincerely,<br/> Your Team at Millennium <br/> Click the link below to view the invoice:</p> <p><a href='".$invoices->public_url."'>".$invoices->public_url."</a></p>";
+		$body = ['body'=>$msg];
+		Mail::send('templates.emails.html', $body, function($message) use($invoices) {
+         		$message->to($invoices->client->email, $invoices->client->name)->subject('Payment Reminder Email: Invoice #'.$invoices->number );
+         		$message->from('subham.s@jurysoft.com', Auth::user()->name);
+        	});
+	}
+	return redirect()->route('invoices.displayReminder')
+            ->with('alert', 'Reminder sent successfully');
+    }
+
+	public function sendMultipleReminder(){
+	
+	$data = request('data');
+	if(empty($data)){
+		return redirect()->route('invoices.displayReminder')
+            		->with('alert', 'Please select atleast one invoice');
+	}
+	$data = explode (",", $data);
+
+	$invoices = Invoice::select('invoices.*')
+            ->join('clients', 'clients.id', '=', 'invoices.client_id')
+            ->join('invoice_amounts', 'invoice_amounts.invoice_id', '=', 'invoices.id')
+            ->join('invoices_custom', 'invoices_custom.invoice_id', '=', 'invoices.id')
+            ->with(['client', 'activities', 'amount.invoice.currency'])
+	    ->whereDate('invoices.due_at', '<', Carbon::now())
+	    ->whereIn('invoices.id', $data)
+	    ->whereIn('invoices.invoice_status_id', array(InvoiceStatuses::getStatusId('paid_partial'), InvoiceStatuses::getStatusId('overdue')))
+            ->sortable(['invoice_date' => 'desc', 'LENGTH(number)' => 'desc', 'number' => 'desc'])
+            ->get();
+
+	foreach($invoices as $invoices){
+		$msg = "<p>Hello ".$invoices->client->name."<br/> We would like to follow up on payment for the attached invoice.<br/> We are looking forward to being a part of your event!<br/> Hope you have a wonderful and blessed day!<br/> Sincerely,<br/> Your Team at Millennium <br/> Click the link below to view the invoice:</p> <p><a href='".$invoices->public_url."'>".$invoices->public_url."</a></p>";
+		$body = ['body'=>$msg];
+		Mail::send('templates.emails.html', $body, function($message) use($invoices) {
+         		$message->to($invoices->client->email, $invoices->client->name)->subject('Payment Reminder Email: Invoice #'.$invoices->number );
+         		$message->from('subham.s@jurysoft.com', Auth::user()->name);
+        	});
+	}
+	return redirect()->route('invoices.displayReminder')
+            ->with('alert', 'Reminder sent successfully');
+    }
+
+    
+
 }

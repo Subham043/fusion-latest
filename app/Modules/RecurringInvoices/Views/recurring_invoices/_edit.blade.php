@@ -1,5 +1,24 @@
 @include('recurring_invoices._js_edit')
 
+<!-- CSS for searching -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<!-- JS for searching -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+// .js-example-basic-single declare this class into your select box
+$(document).ready(function() {
+    $('.js-example-basic-single').select2();
+});
+function deleteUnsavedGroupItem(){
+		if (!confirm('{!! trans('fi.delete_record_warning') !!}')) return false;
+		this.event.target.parentNode.parentNode.parentNode.remove();
+	}
+
+</script>
+
+
+
 <section class="content-header">
     <h1 class="pull-left">{{ trans('fi.recurring_invoice') }} #{{ $recurringInvoice->id }}</h1>
 
@@ -121,8 +140,13 @@
                                     <td>{!! Form::text('price', null, ['class' => 'form-control']) !!}</td>
                                     <td>{!! Form::select('tax_rate_id', $taxRates, config('fi.itemTaxRate'), ['class' => 'form-control']) !!}</td>
                                    <!-- <td>{!! Form::select('tax_rate_2_id', $taxRates, config('fi.itemTax2Rate'), ['class' => 'form-control']) !!}</td>-->
-                                    <td></td>
-                                    <td></td>
+                                    <td style="text-align: right; padding-right: 25px;" class="changeTotal"></td>
+                                    <td>
+					<a class="btn btn-xs btn-default btn-delete-invoice-group-item-unsaved" onclick="deleteUnsavedGroupItem()" href="javascript:void(0);"
+                                               title="{{ trans('fi.delete') }}">
+                                                <i class="fa fa-times"></i>
+                                            </a>
+				    </td>
                                 </tr>
                                 @foreach ($recurringInvoice->items as $item)
                                     <tr class="item" id="tr-item-{{ $item->id }}">
@@ -130,14 +154,14 @@
                                             {!! Form::hidden('recurring_invoice_id', $recurringInvoice->id) !!}
                                             {!! Form::hidden('id', $item->id) !!}
                                            <!-- {!! Form::text('name', $item->name, ['class' => 'form-control item-lookup']) !!}-->
-						{!! Form::select('name', $inventory, $item->name, ['class' => 'form-control']) !!}
+						{!! Form::select('name', $inventory, $item->name, ['class' => 'form-control js-example-basic-single','style'=>'width:100%;']) !!}
                                         </td>
                                         <td>{!! Form::textarea('description', $item->description, ['class' => 'form-control', 'rows' => 1]) !!}</td>
                                         <td>{!! Form::text('quantity', $item->formatted_quantity, ['class' => 'form-control']) !!}</td>
                                         <td>{!! Form::text('price', $item->formatted_numeric_price, ['class' => 'form-control']) !!}</td>
                                         <td>{!! Form::select('tax_rate_id', $taxRates, $item->tax_rate_id, ['class' => 'form-control']) !!}</td>
                                        <!-- <td>{!! Form::select('tax_rate_2_id', $taxRates, $item->tax_rate_2_id, ['class' => 'form-control']) !!}</td>-->
-                                        <td style="text-align: right; padding-right: 25px;">{{ $item->amount->formatted_subtotal }}</td>
+                                        <td style="text-align: right; padding-right: 25px;" class="changeTotal">{{ $item->amount->formatted_subtotal }}</td>
                                         <td>
                                             <a class="btn btn-xs btn-default btn-delete-recurring-invoice-item" href="javascript:void(0);"
                                                title="{{ trans('fi.delete') }}" data-item-id="{{ $item->id }}">
@@ -221,8 +245,8 @@
                     <div class="form-group">
                         <label>{{ trans('fi.every') }}</label>
                         <div class="row">
-                            <div class="col-md-4">
-                                {!! Form::select('recurring_frequency', array_combine(range(1, 90), range(1, 90)), $recurringInvoice->recurring_frequency, ['id' => 'recurring_frequency', 'class' => 'form-control']) !!}
+                            <div class="col-md-4" style="padding-right:0">
+                                {!! Form::select('recurring_frequency', array_combine(range(1, 90), range(1, 90)), $recurringInvoice->recurring_frequency, ['id' => 'recurring_frequency', 'class' => 'form-control', 'style'=>'padding:0']) !!}
                             </div>
                             <div class="col-md-8">
                                 {!! Form::select('recurring_period', $frequencies, $recurringInvoice->recurring_period, ['id' => 'recurring_period', 'class' => 'form-control']) !!}

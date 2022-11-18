@@ -128,6 +128,19 @@
         </tr>
     @endforeach
 
+@if($invoice->groupitems()->count()>0)
+@foreach ($invoice->groupitems as $item)
+        <tr>
+            <td>{!! $item->name !!}</td>
+            <td>{!! $item->formatted_description !!}</td>
+            <td nowrap class="amount">{{ $item->formatted_quantity }}</td>
+	    <td nowrap class="amount">${{ number_format((float)$item->total, 2, '.', '') }}</td>
+            <td nowrap class="amount">${{ number_format((float)$item->total, 2, '.', '') }}</td>
+        </tr>
+@endforeach
+@endif
+
+
     <tr>
         <td colspan="4" class="amount">{{ mb_strtoupper(trans('fi.subtotal')) }}</td>
         <td class="amount">{{ $invoice->amount->formatted_subtotal }}</td>

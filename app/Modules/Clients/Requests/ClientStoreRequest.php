@@ -36,8 +36,12 @@ class ClientStoreRequest extends FormRequest
     {
         $request = $this->all();
 
+	//print_r($request['name']);exit;
+
         $request['email'] = $this->input('client_email', $this->input('email', ''));
+	$request['name'] = $this->input('client_name', $this->input('name', ''));
         unset($request['client_email']);
+	unset($request['client_name']);
 
         
 
@@ -48,8 +52,8 @@ class ClientStoreRequest extends FormRequest
     {
         return [
             'name'        => 'required',
-            'unique_name' => 'required_with:name|unique:clients',
-            'email'       => 'email',
+            'unique_name' => 'required|unique:clients',
+            'email'       => 'required|email',
             'phone'       => 'regex:/^[0-9\s\+\-]*$/',
             'mobile'       => 'regex:/^[0-9\s\+\-]*$/',
             'fax'       => 'regex:/^[0-9\s\+\-]*$/',

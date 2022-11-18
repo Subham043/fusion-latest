@@ -49,18 +49,25 @@
                     <div class="box-body">
 
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label>{{ trans('fi.name') }}: </label>
                                     {!! Form::text('name', null, ['id' => 'name', 'class' => 'form-control']) !!}
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label>{{ trans('fi.email') }}: </label>
                                     {!! Form::text('email', null, ['id' => 'email', 'class' => 'form-control']) !!}
                                 </div>
                             </div>
+			    <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Access Level: </label>
+				    {!! Form::select('access_level', $access_level, null, ['class' => 'form-control', 'id' => 'access_level']) !!}
+                                </div>
+                            </div>
+
                         </div>
 
                         @if (!$editMode)

@@ -15,7 +15,7 @@
                 <div id="modal-status-placeholder"></div>
 
                 <form class="form-horizontal">
-
+			
                     <div class="form-group">
                         <label class="col-sm-3 control-label">{{ trans('fi.to') }}</label>
 

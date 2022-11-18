@@ -64,6 +64,9 @@ class RecurringInvoiceEditController extends Controller
         $recurringInvoice->custom->update($request->input('custom', []));
 
         // Save the items.
+	if($request->input('items')==null){
+            return response()->json(['message' => 'Please add an item to the recurring invoice'], 422);
+        }
         foreach ($request->input('items') as $item)
         {
             $item['apply_exchange_rate'] = request('apply_exchange_rate');

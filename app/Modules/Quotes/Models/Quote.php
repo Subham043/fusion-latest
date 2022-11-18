@@ -26,6 +26,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use FI\Modules\Invoices\Models\Invoice;
 use FI\Modules\Inventory\Models\Inventory;
+use Illuminate\Support\Facades\Storage;
+use File;
+
 
 class Quote extends Model
 {
@@ -59,6 +62,13 @@ class Quote extends Model
         static::created(function ($quote)
         {
             event(new QuoteCreated($quote));
+	
+	    $url = "CHK-".$quote->id;
+
+	    $barcode = new \FI\Modules\Inventory\Barcode\Barcode();
+	    $bobj = $barcode->getBarcodeObj('C128', $url, 0, -30, 'black', array(0, 0, 0, 0));
+  	    Storage::put('public/barcode/quote-item-checklist-'.$quote->id.'-barcode.png', $bobj->getPngData());
+	    File::move(storage_path('app/public/barcode/quote-item-checklist-'.$quote->id.'-barcode.png'), public_path('assets/barcode/quote-item-checklist-'.$quote->id.'-barcode.png'));
         });
 
         static::deleted(function ($quote)
@@ -135,6 +145,12 @@ class Quote extends Model
     public function items()
     {
         return $this->hasMany('FI\Modules\Quotes\Models\QuoteItem')
+            ->orderBy('display_order');
+    }
+
+    public function groupitems()
+    {
+        return $this->hasMany('FI\Modules\Quotes\Models\QuoteGroupItem')
             ->orderBy('display_order');
     }
 
@@ -402,7 +418,7 @@ class Quote extends Model
         {
 
             $keywords = strtolower($keywords);
-
+	    $num = substr($keywords, (strpos($keywords, '-') ?: -1) + 1);
             $query->where(DB::raw('lower(number)'), 'like', '%' . $keywords . '%');
                 
             if(preg_match("/^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4}$/", $keywords) === 1) {
@@ -412,7 +428,7 @@ class Quote extends Model
                 $query->orWhere('expires_at', 'like', '%' . DateFormatter::unformat($keywords) . '%');
             }
             
-            $query->orWhere('summary', 'like', '%' . $keywords . '%');
+            $query->orWhere('summary', 'like', '%' . $keywords . '%')->orWhere('quotes.id', 'LIKE', "%$num%");
             $query->orWhereIn('client_id', function ($query) use ($keywords)
             {
                 $query->select('id')->from('clients')->where(DB::raw("CONCAT_WS('^',LOWER(name),LOWER(unique_name))"), 'like', '%' . $keywords . '%');

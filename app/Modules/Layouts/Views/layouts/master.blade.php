@@ -27,7 +27,7 @@
         <section class="sidebar">
 
             @if (config('fi.displayProfileImage'))
-		<div>
+	    <div>
                 <div class="user-panel">
                     <div class="pull-left image">
                         <img src="{{ $profileImageUrl }}" alt="User Image"/>
@@ -48,8 +48,8 @@
                     </div>
                 </form>
                 
-            @endif
-		</div>
+                @endif
+	    </div>
             @endif
 
 
@@ -59,42 +59,117 @@
                         <i class="fa fa-dashboard"></i> <span>{{ trans('fi.dashboard') }}</span>
                     </a>
                 </li>
+		@if(in_array(0,json_decode(Auth::user()->access_levels->access)))
+                <li>
+                    <a href="{{ route('master_clients.index', ['status' => 'active']) }}">
+                        <i class="fa fa-user"></i> <span>Master {{ trans('fi.clients') }}</span>
+                    </a>
+                </li>
+		@endif
+		@if(in_array(0,json_decode(Auth::user()->access_levels->access)))
                 <li>
                     <a href="{{ route('clients.index', ['status' => 'active']) }}">
                         <i class="fa fa-users"></i> <span>{{ trans('fi.clients') }}</span>
                     </a>
                 </li>
+		@endif
+		@if(in_array(1,json_decode(Auth::user()->access_levels->access)))
                 <li>
                     <a href="{{ route('quotes.index', ['status' => config('fi.quoteStatusFilter')]) }}">
                         <i class="fa fa-file-text-o"></i> <span>{{ trans('fi.quotes') }}</span>
                     </a>
                 </li>
+		@endif
+		@if(in_array(2,json_decode(Auth::user()->access_levels->access)))
                 <li>
                     <a href="{{ route('invoices.index', ['status' => config('fi.invoiceStatusFilter')]) }}">
                         <i class="fa fa-file-text"></i> <span>{{ trans('fi.invoices') }}</span>
                     </a>
                 </li>
+		@endif
+		@if(in_array(2,json_decode(Auth::user()->access_levels->access)))
+		<li class="treeview ">
+                    <a href="#">
+                        <i class="fa fa-file-text"></i>
+                        <span>Payment Reminder</span>
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="{{ route('invoices.displayReminder') }}"><i class="fa fa-caret-right"></i> Individual</a></li>
+                        <li><a href="{{ route('invoices.displayReminderCorporate') }}"><i class="fa fa-caret-right"></i> Corporate</a></li>
+                     </ul>
+                </li>
+		@endif
+		@if(in_array(2,json_decode(Auth::user()->access_levels->access)))
                 <li>
                     <a href="{{ route('recurringInvoices.index') }}">
                         <i class="fa fa-refresh"></i> <span>{{ trans('fi.recurring_invoices') }}</span>
                     </a>
                 </li>
+		@endif
+		@if(in_array(3,json_decode(Auth::user()->access_levels->access)))
+		<li>
+                    <a href="{{ route('scheduler.loadinloadoutcalendar') }}">
+                        <i class="fa fa-calendar"></i> <span>Load In - Load Out Calendar</span>
+                    </a>
+                </li>
+		@endif
+		@if(in_array(4,json_decode(Auth::user()->access_levels->access)))
+		<li>
+                    <a href="{{ route('scheduler.fullcalendar') }}">
+                        <i class="fa fa-th"></i> <span>Events {{ trans('Scheduler::texts.calendar') }}</span>
+                    </a>
+                </li>
+		@endif
+		@if(in_array(5,json_decode(Auth::user()->access_levels->access)))
                 <li>
                     <a href="{{ route('payments.index') }}">
                         <i class="fa fa-credit-card"></i> <span>{{ trans('fi.payments') }}</span>
                     </a>
                 </li>
-                <li>
-                    <a href="{{ route('inventory.index') }}">
-                        <i class="fa fa-shopping-cart"></i> <span>{{ trans('fi.inventory') }}</span>
+		@endif
+		@if(in_array(6,json_decode(Auth::user()->access_levels->access)))
+		<li class="treeview {{strpos(url()->current(),'inventory') !== false ? 'active' : ''}} ">
+                    <a href="#">
+                        <i class="fa fa-shopping-cart"></i>
+                        <span>{{ trans('fi.inventory') }}</span>
+                        <i class="fa fa-angle-left pull-right"></i>
                     </a>
+                    <ul class="treeview-menu {{strpos(url()->current(),'inventory') !== false ? 'menu-open' : ''}} ">
+                        <li><a href="{{ route('inventory.index') }}"><i class="fa fa-caret-right"></i> {{ trans('fi.inventory') }}</a></li>
+                        <li><a href="{{ route('inventory_category.index') }}"><i class="fa fa-caret-right"></i> Inventory Category</a></li>
+                        <li><a href="{{ route('inventory_sub_category.index') }}"><i class="fa fa-caret-right"></i> Inventory Sub-Category</a></li>
+			<li><a href="{{ route('inventory_location.index') }}"><i class="fa fa-caret-right"></i> Inventory Location</a></li>
+                        <li><a href="{{ route('inventory_item_location.index') }}"><i class="fa fa-caret-right"></i> Inventory Item Location</a></li>
+			<li><a href="{{ route('inventory_color.index') }}"><i class="fa fa-caret-right"></i> Inventory Color</a></li>
+			<li><a href="{{ route('inventory_style.index') }}"><i class="fa fa-caret-right"></i> Inventory Style</a></li>
+			<li><a href="{{ route('inventorygrouplist.index') }}"><i class="fa fa-caret-right"></i> Inventory Group List</a></li>
+                     </ul>
                 </li>
-                <li>
+		@endif
+		@if(in_array(7,json_decode(Auth::user()->access_levels->access)))
+		<li class="treeview {{strpos(url()->current(),'barcode-print') !== false ? 'active' : ''}} ">
+                    <a href="#">
+                        <i class="fa fa-barcode"></i>
+                        <span>Barcode Printer</span>
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu  {{strpos(url()->current(),'barcode-print') !== false ? 'menu-open' : ''}} ">
+                        <li><a href="{{ route('invoices.barcodePrinter') }}" target="_blank"><i class="fa fa-caret-right"></i> Invoices Checklist</a></li>
+                        <li><a href="{{ route('quotes.barcodePrinter') }}" target="_blank"><i class="fa fa-caret-right"></i> Quotes Checklist</a></li>
+                        <li><a href="{{ route('inventory.barcodePrinter') }}" target="_blank"><i class="fa fa-caret-right"></i> Inventory </a></li>
+			<li><a href="{{ route('inventorygrouplist.barcodePrinter') }}" target="_blank"><i class="fa fa-caret-right"></i> Inventory Group</a></li>
+                     </ul>
+                </li>
+		@endif
+		@if(in_array(8,json_decode(Auth::user()->access_levels->access)))
+               <!-- <li>
                     <a href="{{ route('expenses.index') }}">
                         <i class="fa fa-bank"></i> <span>{{ trans('fi.expenses') }}</span>
                     </a>
-                </li>
-
+                </li>-->
+		@endif
+		@if(in_array(9,json_decode(Auth::user()->access_levels->access)))
                 <li class="treeview">
                     <a href="#">
                         <i class="fa fa-bar-chart-o"></i>
@@ -110,6 +185,11 @@
                         <li><a href="{{ route('reports.profitLoss') }}"><i class="fa fa-caret-right"></i> {{ trans('fi.profit_and_loss') }}</a></li>
                         <li><a href="{{ route('reports.revenueByClient') }}"><i class="fa fa-caret-right"></i> {{ trans('fi.revenue_by_client') }}</a></li>
                         <li><a href="{{ route('reports.taxSummary') }}"><i class="fa fa-caret-right"></i> {{ trans('fi.tax_summary') }}</a></li>
+			<li><a href="{{ route('reports.sales') }}"><i class="fa fa-caret-right"></i> Sales</a></li>
+			<li><a href="{{ route('reports.quotes') }}"><i class="fa fa-caret-right"></i> Quotes</a></li>
+			<li><a href="{{ route('reports.paid') }}"><i class="fa fa-caret-right"></i> Paid</a></li>
+			<li><a href="{{ route('reports.aging') }}"><i class="fa fa-caret-right"></i> Aging</a></li>
+
 
                         @foreach (config('fi.menus.reports') as $report)
                             @if (view()->exists($report))
@@ -118,12 +198,14 @@
                         @endforeach
                     </ul>
                 </li>
-
+		@endif
+		@if(in_array(10,json_decode(Auth::user()->access_levels->access)))
                 @foreach (config('fi.menus.navigation') as $menu)
                     @if (view()->exists($menu))
                         @include($menu)
                     @endif
                 @endforeach
+		@endif
             </ul>
 
         </section>

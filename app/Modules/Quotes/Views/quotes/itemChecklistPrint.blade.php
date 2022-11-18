@@ -137,6 +137,12 @@
 					 @endif
 				@endforeach
 			@endif
+	<br><br><span class="info">BARCODE</span><br>
+	<label style="text-align:center;">
+	<img src="{{asset('assets/barcode/quote-item-checklist-'.$quote->id.'-barcode.png')}}" />
+	<br>
+	CHK-{{$quote->id}}</label>
+	<br><br>
         </td>
         <td style="width: 50%; text-align: right;" valign="top">
             {!! $quote->companyProfile->logo(150) !!}<br>
@@ -161,6 +167,7 @@
     <thead>
     <tr>
 	<th></th>
+	<th>{{ mb_strtoupper('barcode') }}</th>
         <th>{{ mb_strtoupper(trans('fi.product')) }}</th>
         <th>{{ mb_strtoupper(trans('fi.description')) }}</th>
         <th class="amount">{{ mb_strtoupper(trans('fi.quantity')) }}</th>
@@ -170,6 +177,13 @@
     @foreach ($quote->items as $item)
         <tr>
 	<td><input type="checkbox" /></td>
+	    <td>
+		<label style="text-align:center;">
+		<img src="{{asset('assets/barcode/inventory'.$item->inventory->id.'-barcode.png')}}" />
+		<br>
+		PRD-{{$item->inventory->id}}</label>
+
+	    </td>
             <td>{!! $item->name !!}</td>
             <td>{!! $item->formatted_description !!}</td>
             <td nowrap class="amount">{{ $item->formatted_quantity }}</td>
@@ -201,6 +215,46 @@
     <!--</tr>-->
     </tbody>
 </table>
+
+<br>
+@if($quote->groupitems()->count()>0)
+<h4>Group Items : </h4>
+@foreach ($quote->groupitems as $item)
+<h5><b><u>{{$item->name}}</u></b></h5>
+<table class="alternate">
+    <thead>
+    <tr>
+<th></th>
+	<th>{{ mb_strtoupper('barcode') }}</th>
+        <th>{{ mb_strtoupper(trans('fi.product')) }}</th>
+        <th>{{ mb_strtoupper(trans('fi.description')) }}</th>
+        <th class="amount">{{ mb_strtoupper(trans('fi.quantity')) }}</th>
+    </tr>
+    </thead>
+    <tbody>
+	@if($item->inventorygrouplist->items()->count()>0)
+    @foreach ($item->inventorygrouplist->items as $item)
+        <tr>
+<td><input type="checkbox" /></td>
+	    <td>
+		<label style="text-align:center;">
+		<img src="{{asset('assets/barcode/inventory'.$item->inventory->id.'-barcode.png')}}" />
+		<br>
+		PRD-{{$item->inventory->id}}</label>
+
+	    </td>
+            <td>{!! $item->name !!}</td>
+            <td>{!! $item->formatted_description !!}</td>
+            <td nowrap class="amount">{{ $item->formatted_quantity }}</td>
+        </tr>
+    @endforeach
+@endif
+    </tbody>
+</table>
+
+@endforeach
+@endif
+
 
 <table>
     <tr>

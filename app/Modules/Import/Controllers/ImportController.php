@@ -28,6 +28,7 @@ class ImportController extends Controller
             'payments'     => trans('fi.payments'),
             'expenses'     => trans('fi.expenses'),
             'itemLookups'  => trans('fi.item_lookups'),
+	    'itemLookups'  => 'Inventory',
         ];
 
         return view('import.index')

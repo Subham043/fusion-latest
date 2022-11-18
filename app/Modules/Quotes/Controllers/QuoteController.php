@@ -20,6 +20,7 @@ use FI\Support\Statuses\QuoteStatuses;
 use FI\Traits\ReturnUrl;
 use Addons\Scheduler\Models\Schedule;
 use FI\Modules\CustomFields\Models\CustomField;
+use Illuminate\Http\Request;
 
 class QuoteController extends Controller
 {
@@ -105,6 +106,16 @@ class QuoteController extends Controller
 
         $pdf->download($quote->html, FileNames::quote($quote));
     }
+
+	 public function print($id)
+    {
+        $quote = Quote::find($id);
+
+        
+        return view('quotes.print')
+            ->with('quote', $quote);
+    }
+
     
     public function itemChecklist($id)
     {
@@ -128,5 +139,42 @@ class QuoteController extends Controller
             ->with('quote', $quote)
 	->with('customFields', CustomField::forTable('quotes')->get())
 		->with('logo', $quote->companyProfile->logo())->render();
+    }
+
+	public function barcodePrinter(Request $req)
+    {
+
+        $status = request('status', 'all_statuses');
+
+        $quotes = Quote::select('quotes.*')
+            ->join('clients', 'clients.id', '=', 'quotes.client_id')
+            ->join('quote_amounts', 'quote_amounts.quote_id', '=', 'quotes.id')
+            ->with(['client', 'activities', 'amount.quote.currency'])
+	    ->keywords(request('search'));
+		if($req->has('item')){
+			if($req->input('item')=="all"){
+
+				$quotes = $quotes->paginate(10000);
+			}else{
+			  $quotes = $quotes->paginate($req->input('item'));
+			}
+		}
+		else{
+            $quotes = $quotes->paginate(config('fi.resultsPerPage'));
+		}
+        
+        
+        
+        return view('quotes.barcodePrinter')
+		->with('displaySearch', true)
+		->with('quotes', $quotes);
+    }
+
+	public function barcodePrinterSingle($id)
+    {
+        $quote = Quote::findOrFail($id);
+        
+        return view('quotes.barcodePrinterSingle')
+            ->with('quotes', $quote);
     }
 }

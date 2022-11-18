@@ -28,6 +28,15 @@ class QuoteUpdateRequest extends QuoteStoreRequest
             }
         }
 
+	if (isset($request['group_items']))
+        {
+            foreach ($request['group_items'] as $key => $item)
+            {
+                $request['group_items'][$key]['group_quantity'] = NumberFormatter::unformat($item['group_quantity']);
+                $request['group_items'][$key]['group_price']    = NumberFormatter::unformat($item['group_price']);
+            }
+        }
+
         $this->replace($request);
     }
 
@@ -44,6 +53,9 @@ class QuoteUpdateRequest extends QuoteStoreRequest
             'items.*.name'     => 'required',
             'items.*.quantity' => 'required_with:items.*.price,items.*.name|numeric',
             'items.*.price'    => 'required_with:items.*.name,items.*.quantity|numeric',
+	    'group_items.*.group_name'      => 'required',
+            'group_items.*.group_quantity'  => 'required_with:groupitems.*.price,items.*.name|numeric',
+            'group_items.*.group_price'     => 'required_with:groupitems.*.name,items.*.quantity|numeric',
         ];
     }
 }

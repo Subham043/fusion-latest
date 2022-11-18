@@ -18,6 +18,8 @@ Route::group(['middleware' => ['web', 'auth.admin'], 'prefix' => 'clients', 'nam
     Route::get('{id}/delete', ['uses' => 'ClientController@delete', 'as' => 'clients.delete']);
     Route::get('ajax/lookup', ['uses' => 'ClientController@ajaxLookup', 'as' => 'clients.ajax.lookup']);
     Route::get('ajax/user-lookup', ['uses' => 'ClientController@ajaxUserLookup', 'as' => 'clients.ajax.userlookup']);
+    Route::get('ajax/user-lookup-master', ['uses' => 'ClientController@ajaxUserLookupMaster', 'as' => 'clients.ajax.userlookup_master']);
+
 
     Route::post('create', ['uses' => 'ClientController@store', 'as' => 'clients.store']);
     Route::post('ajax/modal_edit', ['uses' => 'ClientController@ajaxModalEdit', 'as' => 'clients.ajax.modalEdit']);

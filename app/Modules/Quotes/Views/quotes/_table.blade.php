@@ -1,3 +1,8 @@
+<style>
+	.w-160{
+		width:160px;
+	}
+</style>
 <table class="table table-hover">
 
     <thead>
@@ -20,8 +25,8 @@
     @foreach ($quotes as $quote)
         <tr>
             <td><input type="checkbox" class="bulk-record" data-id="{{ $quote->id }}"></td>
-            <td class="hidden-sm hidden-xs">
-                <span class="label label-{{ $statuses[$quote->quote_status_id] }}">{{ trans('fi.' . $statuses[$quote->quote_status_id]) }}</span>
+            <td class="hidden-sm hidden-xs w-160">
+                <span class="label label-{{ $statuses[$quote->quote_status_id] }}">{{ trans('fi.' . $statuses[$quote->quote_status_id]) }}</span><br/><br/>
                 @if ($quote->viewed)
                     <span class="label label-success">{{ trans('fi.viewed') }}</span>
                 @else
@@ -52,7 +57,7 @@
                     <ul class="dropdown-menu dropdown-menu-right">
                         <li><a href="{{ route('quotes.edit', [$quote->id]) }}"><i
                                     class="fa fa-edit"></i> {{ trans('fi.edit') }}</a></li>
-                        <li><a href="{{ route('quotes.pdf', [$quote->id]) }}" target="_blank" id="btn-pdf-quote"><i
+                        <li><a href="{{ route('quotes.print', [$quote->id]) }}" target="_blank" id="btn-print-quote"><i
                                     class="fa fa-print"></i> {{ trans('fi.pdf') }}</a></li>
                         @if (config('fi.mailConfigured'))
                         <li><a href="javascript:void(0)" class="email-quote" data-quote-id="{{ $quote->id }}"

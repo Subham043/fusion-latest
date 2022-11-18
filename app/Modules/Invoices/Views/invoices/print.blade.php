@@ -109,6 +109,8 @@
     <section class="content-header" id="print-section">
 
     <div class="pull-right">
+	<a href="{{ route('invoices.pdf', [$invoice->id]) }}" target="_blank" id="btn-pdf-invoice"
+           class="btn btn-default"><i class="fa fa-file-pdf-o"></i> {{ trans('fi.pdf') }}</a>
         <button  onclick="window.print();"
            class="btn btn-default"><i class="fa fa-print"></i> {{ trans('fi.print') }}</button>
 
@@ -119,7 +121,7 @@
 
 <table>
     <tr>
-        <td style="width: 50%;" valign="top">
+        <td style="width: 33%;" valign="top">
             <h1>{{ mb_strtoupper(trans('fi.invoice')) }}</h1>
             <span class="info">{{ mb_strtoupper(trans('fi.invoice')) }} #</span>{{ $invoice->number }}<br>
             <span class="info">{{ mb_strtoupper(trans('fi.quote')) }} #</span>{{ str_replace("INV", "QUO", $invoice->number) }}<br>
@@ -128,7 +130,8 @@
             <span class="info">{{ mb_strtoupper(trans('fi.bill_to')) }}</span><br>{{ $invoice->client->name }}<br>
             @if ($invoice->client->address) {!! $invoice->client->formatted_address !!}<br>@endif
         </td>
-        <td style="width: 50%; text-align: right;" valign="top">
+	<td style="width: 33%;"><h4 style="display:block;margin:auto;text-align: center;">{{ $invoice->summary }}</h4></td>
+        <td style="width: 33%; text-align: right;" valign="top">
             {!! $invoice->companyProfile->logo() !!}<br>
             {{ $invoice->companyProfile->company }}<br>
             {!! $invoice->companyProfile->formatted_address !!}<br>
@@ -149,7 +152,9 @@
     </tr>
     </thead>
     <tbody>
+	
     @foreach ($invoice->items as $item)
+	
         <tr>
             <td>{!! $item->name !!}</td>
             <td>{!! $item->formatted_description !!}</td>
@@ -158,6 +163,19 @@
             <td nowrap class="amount">{{ $item->amount->formatted_subtotal }}</td>
         </tr>
     @endforeach
+
+@if($invoice->groupitems()->count()>0)
+@foreach ($invoice->groupitems as $item)
+        <tr>
+            <td>{!! $item->name !!}</td>
+            <td>{!! $item->formatted_description !!}</td>
+            <td nowrap class="amount">{{ $item->formatted_quantity }}</td>
+	    <td nowrap class="amount">${{ number_format((float)$item->total, 2, '.', '') }}</td>
+            <td nowrap class="amount">${{ number_format((float)$item->total, 2, '.', '') }}</td>
+        </tr>
+@endforeach
+@endif
+
 
     <tr>
         <td colspan="4" class="amount">{{ mb_strtoupper(trans('fi.subtotal')) }}</td>
